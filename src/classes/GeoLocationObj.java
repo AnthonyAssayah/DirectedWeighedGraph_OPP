@@ -11,6 +11,12 @@ public class GeoLocationObj implements GeoLocation {
         this.y = y;
         this.z = z;
     }
+    public GeoLocationObj(GeoLocationObj other) {
+        this.x = other.x();
+        this.y = other.y();
+        this.z = other.z();
+
+    }
 
     @Override
     public double x() {

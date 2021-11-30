@@ -1,7 +1,11 @@
 package classes;
 
+import api.EdgeData;
 import api.GeoLocation;
 import api.NodeData;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class NodeDataObj implements NodeData {
 
@@ -11,6 +15,19 @@ public class NodeDataObj implements NodeData {
     private String info;
     private int tag;
 
+    private Map<Integer, EdgeData> edges;
+
+    public Map<Integer, EdgeData> getEdges() {
+        return this.edges;
+    }
+    public NodeDataObj ( NodeDataObj NewNode) {
+
+        this.key = NewNode.getKey();
+        this.weight = NewNode.getWeight();
+        this.g = NewNode.getLocation();
+        this.info = NewNode.getInfo();
+        this.tag = NewNode.getTag();
+    }
     public NodeDataObj(int key, GeoLocation g, double weight) {
 
         this.key = key;
@@ -18,7 +35,12 @@ public class NodeDataObj implements NodeData {
         this.weight = weight;
         this.info = getInfo();
         this.tag = 0;
+
+        edges = new HashMap<>();
+       // edges_in = new HashMap<>();
     }
+
+
     /**
      * Returns the key (id) associated with this node.
      *

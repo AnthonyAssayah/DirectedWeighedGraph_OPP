@@ -8,15 +8,24 @@ public class EdgeDataObj implements EdgeData {
     private double weight;
     private String info;
     private int tag;
+    private int ID;
 
     public EdgeDataObj(int src, int dest, double weight) {
 
         this.src = src;
         this.dest = dest;
         this.weight = weight;
+        this.ID = ID;
+        this.info = "";
         this.tag = 0;
-        this.info = getInfo();
-
+    }
+    public EdgeDataObj(EdgeDataObj other){
+        EdgeDataObj e = (EdgeDataObj)other;
+        this.src = e.src;
+        this.dest = e.dest;
+        this.weight = other.getWeight();
+        this.info = other.getInfo();
+        this.tag = other.getTag();
     }
     /**
      * The id of the source node of this edge.
@@ -96,6 +105,7 @@ public class EdgeDataObj implements EdgeData {
                 ", weight=" + weight +
                 ", info='" + info + '\'' +
                 ", tag=" + tag +
+                "ID = "+ ID +
                 '}';
     }
 }

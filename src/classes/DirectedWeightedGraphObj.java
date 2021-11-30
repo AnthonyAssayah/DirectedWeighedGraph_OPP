@@ -11,13 +11,18 @@ import java.util.LinkedList;
 
 public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
 
-    NodeData[] nodes;
-    EdgeData[][] edges;
+    private HashMap<Integer, NodeData> nodes;
+    private HashMap<Integer, HashMap<Integer, EdgeDataObj>> edges;
+    private int num_of_Nodes;
+    private int num_of_Edges;
+    private int mc;
 
-    public DirectedWeightedGraphObj(NodeData[] nodes, EdgeData[][] edges) {
-
-        this.nodes = nodes;
-        this.edges = edges;
+    public DirectedWeightedGraphObj() {
+        this.nodes = new HashMap<>();
+        this.edges = new HashMap<>();
+        this.num_of_Nodes = 0;
+        this.num_of_Edges = 0;
+        this.mc = 0;
     }
     /**
      * returns the node_data by the node_id,
@@ -27,7 +32,7 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public NodeData getNode(int key) {
-        return null;
+        return this.nodes.get(key);
     }
 
     /**
@@ -40,7 +45,7 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public EdgeData getEdge(int src, int dest) {
-        return this.edges[src][dest];
+        return (this.edges.get(src) == null) ? null : this.edges.get(src).get(dest);
     }
 
     /**
@@ -51,9 +56,12 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public void addNode(NodeData n) {
-        if (n.getKey() < this.nodes.length) {
-            this.nodes[n.getKey()] = n;
+        if (nodes.containsKey(n.getKey())) {
+            return;
         }
+        nodes.put(n.getKey(), n);
+        mc++;
+        num_of_Nodes++;
     }
 
     /**
@@ -65,8 +73,27 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      * @param w    - positive weight representing the cost (aka time, price, etc) between src-->dest.
      */
     @Override
-    public void connect(int src, int dest, double w) {
-        this.edges[src][dest] = new EdgeDataObj(src, dest, w);
+    public void connect(int src, int dest, double w) throws Exception {
+        // if weight is negative
+        if ( w < 0) {
+                throw new Exception("Invalid input: weight must be positive");
+        }
+        // if the src and the dest are the same node
+        if (src == dest) {
+            return;
+        }
+        // if there is already an edge between node src and dest src - update the new weight
+        if (this.getEdge(src, dest) != null && this.getEdge(src,dest).getWeight() != w) {
+            EdgeDataObj e = new EdgeDataObj(src, dest, w);
+            mc++;
+         // else if there isn't an edge between the src node and dest node
+        }
+        else if (nodes.containsKey(src) && nodes.containsKey(dest) && this.getEdge(src, dest) == null) {
+            EdgeDataObj e = new EdgeDataObj(src, dest, w);
+            this.edges.get(src).put(dest,e);
+            mc++;
+            num_of_Edges++;
+        }
     }
 
     /**
@@ -78,7 +105,8 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public Iterator<NodeData> nodeIter() {
-        return null;
+        return this.nodes.values().iterator();
+        //Iterator itr_in = this.nodes.getEdges_in().entrySet().iterator();
     }
 
     /**
@@ -89,7 +117,33 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public Iterator<EdgeData> edgeIter() {
-        return null;
+        return new Iterator<EdgeData>() {
+            Iterator<HashMap<Integer, EdgeDataObj>> iter = edges.values().iterator();
+            Iterator<EdgeDataObj> temp = iter.next().values().iterator();
+            @Override
+            public boolean hasNext() {
+                if (!temp.hasNext()) {
+                    if (iter.hasNext()) {
+                        temp = iter.next().values().iterator();
+                        return true;
+                    }
+                    return false;
+                }
+                return true;
+            }
+
+            @Override
+            public EdgeData next() throws NoSuchElementException {
+                if (!temp.hasNext()) {
+                    if (iter.hasNext()) {
+                        temp = iter.next().values().iterator();
+                        return temp.next();
+                    }
+                    throw new NoSuchElementException();
+                }
+                return temp.next();
+            }
+        };
     }
 
     /**
@@ -114,18 +168,30 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public NodeData removeNode(int key) {
-        NodeData temp = this.nodes[key];
-        for (int i = 0 ; i < this.edges.length ; i++) {
-            if (this.edges[i][key] != null) {
-                this.edges[i][key] = null;
+        if (this.nodes.get(key) != null) {
+            NodeDataObj temp = (NodeDataObj) this.nodes.get(key);
+            this.nodes.remove(key);
+            num_of_Nodes--;
+            mc++;
+            Iterator itr_out = edgeIter(key);
+            EdgeDataObj a;
+            while (itr_out.hasNext()) {
+                a = (EdgeDataObj) itr_out.next();
+                this.removeEdge(a.getSrc(), a.getDest());
+                num_of_Edges--;
+                mc++;
             }
-        }
-        for (int i = 0 ; i < this.edges[0].length ; i++) {
-            if (this.edges[key][i] != null) {
-                this.edges[key][i] = null;
+            Iterator<HashMap<Integer, EdgeDataObj>> it = this.edges.values().iterator();
+            //Iterator itr_in = this.edges.entrySet().iterator();
+            while (it.hasNext()) {
+                a = it.next().get(temp.getKey());
+                this.removeEdge(a.getSrc(), a.getDest());
+                num_of_Edges--;
+                mc++;
             }
+            return temp;
         }
-        return temp;
+        return null;
     }
 
     /**
@@ -138,9 +204,14 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public EdgeData removeEdge(int src, int dest) {
-        EdgeData E = this.edges[src][dest];
-        this.edges[src][dest] = null;
-        return E;
+        if (this.edges.get(src) != null && this.edges.get(src).containsKey(dest)) {
+            EdgeDataObj edge = this.edges.get(src).get(dest);
+            this.edges.get(src).remove(dest);
+            num_of_Edges--;
+            mc++;
+            return edge;
+        }
+        return null;
     }
 
     /**
@@ -151,7 +222,7 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public int nodeSize() {
-        return this.nodes.length;
+        return this.num_of_Nodes;
     }
 
     /**
@@ -162,7 +233,7 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public int edgeSize() {
-        return 0;
+        return this.num_of_Edges;
     }
 
     /**
@@ -172,6 +243,6 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public int getMC() {
-        return 0;
+        return this.mc;
     }
 }

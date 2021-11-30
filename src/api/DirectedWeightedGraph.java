@@ -37,7 +37,7 @@ public interface DirectedWeightedGraph {
  * @param dest - the destination of the edge.
  * @param w - positive weight representing the cost (aka time, price, etc) between src-->dest.
  */
-	public void connect(int src, int dest, double w);
+	public void connect(int src, int dest, double w) throws Exception;
 	/**
 	 * This method returns an Iterator for the
 	 * collection representing all the nodes in the graph.
