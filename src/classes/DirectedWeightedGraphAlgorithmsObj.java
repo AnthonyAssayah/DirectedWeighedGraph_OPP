@@ -1,12 +1,25 @@
 package classes;
-
+import api.EdgeData;
+import com.google.gson.*;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import api.DirectedWeightedGraph;
 import api.DirectedWeightedGraphAlgorithms;
 import api.NodeData;
 
+import java.io.FileWriter;
+import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
 
 public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraphAlgorithms {
+
+    private DirectedWeightedGraph DWG;
+
+    public DirectedWeightedGraphAlgorithmsObj(){
+        this.DWG = new DirectedWeightedGraphObj();
+    }
 
     /**
      * Inits the graph on which this set of algorithms operates on.
@@ -16,6 +29,7 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
     @Override
     public void init(DirectedWeightedGraph g) {
 
+        this.DWG = g;
     }
 
     /**
@@ -25,7 +39,7 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
      */
     @Override
     public DirectedWeightedGraph getGraph() {
-        return null;
+        return DWG;
     }
 
     /**
@@ -35,7 +49,9 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
      */
     @Override
     public DirectedWeightedGraph copy() {
-        return null;
+
+        DirectedWeightedGraph DWG_copy = new DirectedWeightedGraphObj();
+            return DWG_copy;
     }
 
     /**
@@ -109,8 +125,51 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
      * @return true - iff the file was successfully saved
      */
     @Override
-    public boolean save(String file) {
-        return false;
+    public boolean save(String file) throws IOException {
+
+        JSONObject Json = new JSONObject();
+        JSONArray nodes_arr = new JSONArray();
+        JSONArray edges_arr = new JSONArray();
+        JSONObject My_nodes;
+        JSONObject My_edges;
+
+        Iterator<NodeData> iterNodes = getGraph().nodeIter();
+
+        while (iterNodes.hasNext()) {
+
+            NodeData v =  iterNodes.next();
+            My_nodes = new JSONObject();
+            My_nodes.put("pos", v.getLocation());
+            My_nodes.put("id", v.getKey());
+
+            nodes_arr.put(My_nodes);
+
+            Iterator<EdgeData> iterEdges = getGraph().edgeIter(v.getKey());
+
+            while ( iterEdges.hasNext()) {
+
+                EdgeData e =  iterEdges.next();
+                My_edges = new JSONObject();
+                My_edges.put("src", e.getSrc());
+                My_edges.put("w", e.getWeight());
+                My_edges.put("dest", e.getDest());
+
+                edges_arr.put(My_edges);
+            }
+        }
+        Json.put("Nodes", nodes_arr);
+        Json.put("Edges", edges_arr);
+
+        try {
+            FileWriter fw = new FileWriter(file);
+            fw.write(Json.toString());
+            fw.close();
+
+        } catch (IOException e) { /// maybe add JsonException  ??
+            e.printStackTrace();
+            //return false           // ??
+        }
+        return true;
     }
 
     /**

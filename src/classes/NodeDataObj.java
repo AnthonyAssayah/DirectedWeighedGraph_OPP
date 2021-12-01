@@ -28,16 +28,16 @@ public class NodeDataObj implements NodeData {
         this.info = NewNode.getInfo();
         this.tag = NewNode.getTag();
     }
-    public NodeDataObj(int key, GeoLocation g, double weight) {
+    public NodeDataObj(int key, GeoLocation g, double weight, String info, int tag) {    //change +info +tag
 
         this.key = key;
         this.g = g;
         this.weight = weight;
-        this.info = getInfo();
-        this.tag = 0;
+        this.info = info;
+        this.tag = tag;
 
         edges = new HashMap<>();
-       // edges_in = new HashMap<>();
+
     }
 
 
@@ -67,8 +67,8 @@ public class NodeDataObj implements NodeData {
      * @param p - new new location  (position) of this node.
      */
     @Override
-    public void setLocation(GeoLocation p) {
-        this.g = p;
+    public void setLocation(GeoLocation p) {                        /// change
+        this.g = new GeoLocationObj(p.x(), p.y(), p.z());
     }
 
     /**

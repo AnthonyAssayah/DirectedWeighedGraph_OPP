@@ -1,4 +1,5 @@
 package api;
+import java.io.IOException;
 import java.util.List;
 /**
  * This interface represents a Directed (positive) Weighted Graph Theory Algorithms including:
@@ -8,7 +9,7 @@ import java.util.List;
  * 3. double shortestPathDist(int src, int dest);
  * 4. List<NodeData> shortestPath(int src, int dest);
  * 5. NodeData center(); // finds the NodeData which minimizes the max distance to all the other nodes.
- *                       // Assuming the graph isConnected, elese return null. See: https://en.wikipedia.org/wiki/Graph_center
+ *                       // Assuming the graph isConnected, else return null. See: https://en.wikipedia.org/wiki/Graph_center
  * 6. List<NodeData> tsp(List<NodeData> cities); // computes a list of consecutive nodes which go over all the nodes in cities.
  *                                               // See: https://en.wikipedia.org/wiki/Travelling_salesman_problem
  * 7. save(file); // JSON file
@@ -79,7 +80,7 @@ public interface DirectedWeightedGraphAlgorithms {
      * @param file - the file name (may include a relative path).
      * @return true - iff the file was successfully saved
      */
-    public boolean save(String file);
+    public boolean save(String file) throws IOException;
 
     /**
      * This method loads a graph to this graph algorithm.

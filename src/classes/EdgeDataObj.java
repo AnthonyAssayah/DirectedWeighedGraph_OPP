@@ -10,14 +10,14 @@ public class EdgeDataObj implements EdgeData {
     private int tag;
     private int ID;
 
-    public EdgeDataObj(int src, int dest, double weight) {
+    public EdgeDataObj(int src, int dest, double weight) {       /// Throw exception for neg weight ??
 
         this.src = src;
         this.dest = dest;
         this.weight = weight;
         this.ID = ID;
-        this.info = "";
-        this.tag = 0;
+        this.info = "";   /// "White" ???
+        this.tag = 0;     /// "-1" ???
     }
     public EdgeDataObj(EdgeDataObj other){
         EdgeDataObj e = (EdgeDataObj)other;

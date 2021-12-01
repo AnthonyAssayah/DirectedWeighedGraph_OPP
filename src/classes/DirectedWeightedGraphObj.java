@@ -17,12 +17,21 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
     private int num_of_Edges;
     private int mc;
 
+    // Default constructor
     public DirectedWeightedGraphObj() {
         this.nodes = new HashMap<>();
         this.edges = new HashMap<>();
         this.num_of_Nodes = 0;
         this.num_of_Edges = 0;
         this.mc = 0;
+    }
+    // Copy constructor                                    // need copy cons for copy func in Algo
+    public DirectedWeightedGraphObj(DirectedWeightedGraph graph) {
+        this.nodes = new HashMap<>();    /// need to initialize the news hashmaps -- maybe pass over the iter ??
+        this.edges = new HashMap<>();   /// need to initialize the news hashmaps -- maybe pass over the iter ??
+        this.num_of_Nodes = graph.nodeSize();
+        this.num_of_Edges = graph.edgeSize();
+        this.mc = graph.getMC();
     }
     /**
      * returns the node_data by the node_id,
@@ -46,6 +55,12 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
     @Override
     public EdgeData getEdge(int src, int dest) {
         return (this.edges.get(src) == null) ? null : this.edges.get(src).get(dest);
+        /**
+         * if (this.nodes.containsKey(src) && this.nodes.containsKey(dest)) {
+         *             return this.edges.get(src).get(dest);
+         *         }
+         *         return null;
+         */
     }
 
     /**
@@ -56,10 +71,12 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public void addNode(NodeData n) {
+        // If the HashMap already contains the node just return
         if (nodes.containsKey(n.getKey())) {
             return;
         }
         nodes.put(n.getKey(), n);
+        //edges.put(n.getKey(), new HashMap<>());       // add it in the edges hashmap
         mc++;
         num_of_Nodes++;
     }
@@ -120,6 +137,12 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
         return new Iterator<EdgeData>() {
             Iterator<HashMap<Integer, EdgeDataObj>> iter = edges.values().iterator();
             Iterator<EdgeDataObj> temp = iter.next().values().iterator();
+
+            @Override
+            public void remove() {
+                Iterator.super.remove();
+            }
+
             @Override
             public boolean hasNext() {
                 if (!temp.hasNext()) {
