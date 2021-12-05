@@ -7,7 +7,6 @@ import api.EdgeData;
 import api.NodeData;
 
 import java.util.Iterator;
-import java.util.LinkedList;
 
 public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
 
@@ -73,7 +72,9 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
     public void addNode(NodeData n) {
         // If the HashMap already contains the node just return
         if (nodes.containsKey(n.getKey())) {
+            System.out.println("hiii");
             return;
+
         }
         nodes.put(n.getKey(), n);
         edges.put(n.getKey(), new HashMap<>());       // add it in the edges hashmap
@@ -122,8 +123,25 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public Iterator<NodeData> nodeIter() {
-        return this.nodes.values().iterator();
-        //Iterator itr_in = this.nodes.getEdges_in().entrySet().iterator();
+        return new Iterator<NodeData>() {
+            Iterator<NodeData> itr = nodes.values().iterator();
+            int MC = mc;
+            @Override
+            public boolean hasNext() {
+                if (MC != mc) {
+                    throw new RuntimeException();
+                }
+                return itr.hasNext();
+            }
+
+            @Override
+            public NodeData next() {
+                if (MC != mc) {
+                    throw new RuntimeException();
+                }
+                return itr.next();
+            }
+        };
     }
 
     /**
@@ -191,30 +209,31 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public NodeData removeNode(int key) {
-        if (this.nodes.get(key) != null) {
-            NodeDataObj temp = (NodeDataObj) this.nodes.get(key);
-            this.nodes.remove(key);
-            num_of_Nodes--;
-            mc++;
-            Iterator itr_out = edgeIter(key);
-            EdgeDataObj a;
-            while (itr_out.hasNext()) {
-                a = (EdgeDataObj) itr_out.next();
-                this.removeEdge(a.getSrc(), a.getDest());
-                num_of_Edges--;
-                mc++;
-            }
-            Iterator<HashMap<Integer, EdgeDataObj>> it = this.edges.values().iterator();
-            //Iterator itr_in = this.edges.entrySet().iterator();
-            while (it.hasNext()) {
-                a = it.next().get(temp.getKey());
-                this.removeEdge(a.getSrc(), a.getDest());
-                num_of_Edges--;
-                mc++;
-            }
-            return temp;
+        if (this.nodes.get(key) == null) {
+            return null;
         }
-        return null;
+        NodeData temp = this.nodes.get(key);
+        num_of_Nodes--;
+        mc++;
+        Iterator itr_out = edgeIter(key);
+        while (itr_out.hasNext()) {
+                EdgeData a = (EdgeDataObj) itr_out.next();
+                this.removeEdge(a.getSrc(), a.getDest());
+                num_of_Edges--;
+                mc++;
+        }
+        Iterator<HashMap<Integer, EdgeDataObj>> it = this.edges.values().iterator();
+
+        while (it.hasNext()) {
+            EdgeData a = it.next().get(key);
+            if (a != null) {
+                this.removeEdge(a.getSrc(), a.getDest());
+                num_of_Edges--;
+                mc++;
+            }
+        }
+        this.nodes.remove(key);
+        return temp;
     }
 
     /**
