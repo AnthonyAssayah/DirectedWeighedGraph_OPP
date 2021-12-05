@@ -54,13 +54,13 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public EdgeData getEdge(int src, int dest) {
-        return (this.edges.get(src) == null) ? null : this.edges.get(src).get(dest);
-        /**
-         * if (this.nodes.containsKey(src) && this.nodes.containsKey(dest)) {
-         *             return this.edges.get(src).get(dest);
-         *         }
-         *         return null;
-         */
+        //return (this.edges.get(src) == null) ? null : this.edges.get(src).get(dest);
+
+          if (this.nodes.containsKey(src) && this.nodes.containsKey(dest)) {
+                      return this.edges.get(src).get(dest);
+                  }
+                  return null;
+
     }
 
     /**
@@ -76,7 +76,7 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
             return;
         }
         nodes.put(n.getKey(), n);
-        //edges.put(n.getKey(), new HashMap<>());       // add it in the edges hashmap
+        edges.put(n.getKey(), new HashMap<>());       // add it in the edges hashmap
         mc++;
         num_of_Nodes++;
     }

@@ -1,8 +1,6 @@
 package classes;
 import api.EdgeData;
-import com.google.gson.*;
 import org.json.JSONArray;
-import org.json.JSONException;
 import org.json.JSONObject;
 import api.DirectedWeightedGraph;
 import api.DirectedWeightedGraphAlgorithms;
@@ -10,8 +8,7 @@ import api.NodeData;
 
 import java.io.FileWriter;
 import java.io.IOException;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraphAlgorithms {
 
@@ -62,7 +59,23 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
      */
     @Override
     public boolean isConnected() {
-        return false;
+        // If there isn't vertices or just only one return true
+        if (this.DWG.nodeSize() == 0 || this.DWG.nodeSize() == 1)
+            return true;
+
+        Iterator<NodeData> it = this.DWG.nodeIter();
+        Iterator<NodeData> it2 = this.DWG.nodeIter();
+
+
+        while (it.hasNext()) {
+            boolean check = this.BFS_Algo(it.next()); // not sur
+            while (it2.hasNext()) {
+                DWG.getNode(it2.next().getKey()).setTag(0);    /// need to reset tag to 0
+            }
+            if(check == false)
+                return false;
+        }
+        return true;
     }
 
     /**
@@ -75,11 +88,26 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
      */
     @Override
     public double shortestPathDist(int src, int dest) {
-        return 0;
+        NodeData source = DWG.getNode(src);
+        NodeData destination = DWG.getNode(dest);
+
+        if (source == null || destination == null) {
+            return -1;
+        }
+        if ( source == destination) {
+            return 0;
+        }
+        double dist = Dijkstra(this.DWG.getNode(src), this.DWG.getNode(dest));
+        if (dist == Double.MAX_VALUE) {
+            return -1;
+        }
+        return dist;
     }
 
+
+
     /**
-     * Computes the the shortest path between src to dest - as an ordered List of nodes:
+     * Computes the shortest path between src to dest - as an ordered List of nodes:
      * src--> n1-->n2-->...dest
      * see: https://en.wikipedia.org/wiki/Shortest_path_problem
      * Note if no such path --> returns null;
@@ -90,7 +118,42 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
      */
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
-        return null;
+
+        // if the shortestPathDist between the src and dest is -1; it means that there isn't path between them
+        if(shortestPathDist(src,dest) == -1) {
+            return null;
+        }
+
+        List<NodeData> Nodelist = new LinkedList<>();
+        NodeData source = this.DWG.getNode(src);
+        NodeData destination = this.DWG.getNode(dest);
+
+        // if the vertices are null return null
+        if(source == null || destination == null) {
+            return null;        //maybe need to throw exception
+        }
+
+        // if the src and the dest are equal; just add it and return the list
+        if( src == dest) {
+            Nodelist.add(destination);
+            return Nodelist;
+        }
+
+        Dijkstra(source,destination);
+
+        List<NodeData> reverse = new LinkedList<>();
+        NodeData curr = destination;
+
+        while (curr.getTag() != -1) {       // while dest != src
+            reverse.add(curr);
+            curr = this.DWG.getNode(curr.getTag());
+        }
+        Nodelist.add(source);
+
+        for(int j = Nodelist.size() - 1; j >= 0; j--) {
+            reverse.add(Nodelist.get(j));
+        }
+        return reverse;
     }
 
     /**
@@ -185,4 +248,55 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
     public boolean load(String file) {
         return false;
     }
-}
+
+    private boolean BFS_Algo(NodeData node) {
+
+        Queue<NodeData> Queue = new LinkedList<>();
+        node.setTag(1);
+        int counter = 1;
+        Queue.add(node);
+        while (!Queue.isEmpty()) {
+            NodeData curr = Queue.poll();
+
+            Iterator<EdgeData> neighbours = this.DWG.edgeIter(curr.getKey());
+
+            while ( neighbours.hasNext()) {
+                NodeData dst = this.DWG.getNode(neighbours.next().getDest());
+                if (dst.getTag() == 0) {
+                    dst.setTag(1);
+                    Queue.add(dst);
+                    counter++;
+                }
+            }
+        }
+        return (counter == this.DWG.nodeSize());
+    }
+
+    private double Dijkstra(NodeData src, NodeData dst) {
+
+        PriorityQueue<NodeData> pq = new PriorityQueue<>((n1, n2) -> Double.compare(n1.getWeight(), n2.getWeight()));
+        double dist = Double.MAX_VALUE;
+        src.setWeight(0);
+        pq.add(src);
+
+        while (!pq.isEmpty()) {
+            NodeData curr = pq.poll();
+
+            Iterator<EdgeData> edges = this.DWG.edgeIter(curr.getKey());
+
+            while ( edges.hasNext()) {
+                NodeData node = this.DWG.getNode(edges.next().getDest());
+                if (node.getInfo() == "White") {            /// need to add info and tag ??
+                    if (node.getWeight() > curr.getWeight() + edges.next().getWeight()) {
+                        node.setWeight(Math.min(node.getWeight(), curr.getWeight() + edges.next().getWeight()));
+                        //node.setTag(curr.getKey());
+                    }
+                    pq.add(node);
+                 }
+              }
+          }
+
+        return dist;
+        }
+    }
+
