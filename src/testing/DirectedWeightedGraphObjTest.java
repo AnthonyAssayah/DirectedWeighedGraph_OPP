@@ -168,14 +168,50 @@ class DirectedWeightedGraphObjTest {
 
     @Test
     void edgeIter() {
-    }
+        new_DWG1();
+        Iterator<EdgeData> iterEdges = this.graph1.edgeIter();
+        int counter = 0;
+        while (iterEdges.hasNext()) {
+
+            EdgeData e = iterEdges.next();
+            assertEquals(this.graph1.getEdge(e.getSrc(),e.getDest()), e);
+            counter++;
+        }
+
+        assertEquals(counter, this.graph1.edgeSize());
+        }
 
     @Test
     void testEdgeIter() {
+        new_DWG1();
+        Iterator<EdgeData> iterEdges = this.graph1.edgeIter(n1.getKey());
+        List<EdgeData> list = new LinkedList<>();
+        list.add(e1);
+        list.add(e2);
+        int counter = 0;
+
+        while (iterEdges.hasNext()) {
+            EdgeData e = iterEdges.next();
+            assertEquals(this.graph1.getEdge(e.getSrc(),e.getDest()), e);
+            counter++;
+
+        }
+        assertEquals(counter, list.size());
     }
 
     @Test
     void removeNode() {
+        new_DWG1();
+        int t = this.graph1.nodeSize();
+        System.out.println(t);
+        System.out.println(this.graph1.edgeSize());
+        this.graph1.removeNode(n1.getKey());
+        int s = this.graph1.nodeSize();
+        System.out.println(s);
+        System.out.println(this.graph1.edgeSize());
+        assertEquals(t-1,s);
+
+
     }
 
     @Test
