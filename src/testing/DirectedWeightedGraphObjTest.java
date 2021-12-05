@@ -47,11 +47,11 @@ class DirectedWeightedGraphObjTest {
         GeoLocation g3 = new GeoLocationObj(5, -1, 1);
         GeoLocation g4 = new GeoLocationObj(0, 0, 0);
 
-        n0 = new NodeDataObj(4,g0,5,"White", -1 );
-        n1 = new NodeDataObj(5,g1,10,"Black", 2 );
-        n2 = new NodeDataObj(3,g2,2,"White", 6 );
-        n3 = new NodeDataObj(7,g3,1,"Black", 1 );
-        n4 = new NodeDataObj(9,g4,8,"White", 1 );
+        n0 = new NodeDataObj(4,g0);
+        n1 = new NodeDataObj(5,g1);
+        n2 = new NodeDataObj(3,g2);
+        n3 = new NodeDataObj(7,g3);
+        n4 = new NodeDataObj(9,g4);
 
         e0 = new EdgeDataObj(n0.getKey(), n1.getKey(),3);
         e1 = new EdgeDataObj(n1.getKey(), n2.getKey(),5);
@@ -115,7 +115,7 @@ class DirectedWeightedGraphObjTest {
     void addNode() {
         new_DWG1();
         GeoLocation g = new GeoLocationObj(11, 22, 6);
-        NodeData new_node = new NodeDataObj(2,g,1,"Black", 1);
+        NodeData new_node = new NodeDataObj(2,g);
         int s = graph1.nodeSize();
         this.graph1.addNode(new_node);
         int t = graph1.nodeSize();
@@ -188,7 +188,7 @@ class DirectedWeightedGraphObjTest {
         assertEquals(5,graph1.nodeSize());
 
         GeoLocation g = new GeoLocationObj(11, 22, 6);
-        NodeData new_node = new NodeDataObj(2,g,1,"Black", 1);
+        NodeData new_node = new NodeDataObj(2,g);
         this.graph1.addNode(new_node);
         assertNotEquals(5,graph1.nodeSize());
 

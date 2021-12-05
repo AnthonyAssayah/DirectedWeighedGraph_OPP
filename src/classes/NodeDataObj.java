@@ -11,7 +11,6 @@ public class NodeDataObj implements NodeData {
 
     private int key;
     private GeoLocation g;
-    private double weight;
     private String info;
     private int tag;
 
@@ -23,18 +22,14 @@ public class NodeDataObj implements NodeData {
     public NodeDataObj ( NodeDataObj NewNode) {
 
         this.key = NewNode.getKey();
-        this.weight = NewNode.getWeight();
         this.g = NewNode.getLocation();
         this.info = NewNode.getInfo();
         this.tag = NewNode.getTag();
     }
-    public NodeDataObj(int key, GeoLocation g, double weight, String info, int tag) {    //change +info +tag
+    public NodeDataObj(int key, GeoLocation g) {    //change +info +tag
 
         this.key = key;
         this.g = g;
-        this.weight = weight;
-        this.info = info;
-        this.tag = tag;
 
         edges = new HashMap<>();
 
@@ -78,7 +73,7 @@ public class NodeDataObj implements NodeData {
      */
     @Override
     public double getWeight() {
-        return this.weight;
+        return 0;
     }
 
     /**
@@ -88,7 +83,7 @@ public class NodeDataObj implements NodeData {
      */
     @Override
     public void setWeight(double w) {
-        this.weight = w;
+        return;
     }
 
     /**
@@ -138,7 +133,7 @@ public class NodeDataObj implements NodeData {
         return "NodeDataObj{" +
                 "key=" + key +
                 ", g=" + g +
-                ", weight=" + weight +
+                ", weight=" + 0 +
                 ", info='" + info + '\'' +
                 ", tag=" + tag +
                 '}';

@@ -14,11 +14,11 @@ class NodeDataObjTest {       /// test on constructors ???
 
     public void new_Node1() {
         GeoLocation g1 = new GeoLocationObj(7, -1, 3.5);
-        node1 = new NodeDataObj(4,g1,5,"White", 6 );
+        node1 = new NodeDataObj(4,g1);
     }
     public void new_Node2() {
         GeoLocation g2 = new GeoLocationObj(-55, 88.8, 6);
-        node2 = new NodeDataObj(-32,g2,14,"Black", -9 );
+        node2 = new NodeDataObj(-32,g2);
     }
 
 

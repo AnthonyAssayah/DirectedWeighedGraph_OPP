@@ -25,16 +25,16 @@ class EdgeDataObjTest {
     public void new_edge1() {
         GeoLocation g1 = new GeoLocationObj(7, -1, 3.5);
         GeoLocation g2 = new GeoLocationObj(-55, 88.8, 6);
-        node1 = new NodeDataObj(4,g1,5,"White", 6 );   /// need a default constructor for node ??
-        node2 = new NodeDataObj(-32,g2,14,"Black", -9 );
+        node1 = new NodeDataObj(4,g1);   /// need a default constructor for node ??
+        node2 = new NodeDataObj(-32,g2);
         edge1 = new EdgeDataObj(node1.getKey(),node2.getKey(), 6 );
     }
 
     public void new_edge2() {
         GeoLocation g3 = new GeoLocationObj(-21,45.4,10.09);
         GeoLocation g4 = new GeoLocationObj(0.03,555,1080);
-        node3 = new NodeDataObj(47,g3,23,"White", 2 );   /// need a default constructor for node ??
-        node4 = new NodeDataObj(33,g4,75,"Black", -18 );
+        node3 = new NodeDataObj(47,g3);   /// need a default constructor for node ??
+        node4 = new NodeDataObj(33,g4);
         edge2 = new EdgeDataObj(node3.getKey(),node4.getKey(), 88.8 );
     }
 

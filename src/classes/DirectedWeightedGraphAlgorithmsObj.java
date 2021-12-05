@@ -1,11 +1,12 @@
 package classes;
-import api.EdgeData;
-import org.json.JSONArray;
-import org.json.JSONObject;
-import api.DirectedWeightedGraph;
-import api.DirectedWeightedGraphAlgorithms;
-import api.NodeData;
+import api.*;
+import org.json.simple.JSONArray;
+import org.json.simple.JSONObject;
+import org.json.simple.parser.JSONParser;
+import org.json.simple.parser.ParseException;
 
+import java.io.File;
+import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.*;
@@ -189,7 +190,7 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
      */
     @Override
     public boolean save(String file) throws IOException {
-
+/*
         JSONObject Json = new JSONObject();
         JSONArray nodes_arr = new JSONArray();
         JSONArray edges_arr = new JSONArray();
@@ -232,7 +233,8 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
             e.printStackTrace();
             //return false           // ??
         }
-        return true;
+        return true;*/
+        return false;
     }
 
     /**
@@ -246,7 +248,50 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
      */
     @Override
     public boolean load(String file) {
-        return false;
+
+        JSONParser jsonParser = new JSONParser();
+        File f = new File(file);      // should receive file path as input -> fileName
+        try(FileReader reader = new FileReader(f)){
+
+            Object obj =  jsonParser.parse(reader);
+            JSONObject NodeObject = (JSONObject) obj;
+
+            JSONArray NodeList = (JSONArray) NodeObject.get("Nodes");
+            JSONArray EdgeList = (JSONArray) NodeObject.get("Edges");
+
+            NodeList.forEach(node -> ppNode((JSONObject) node));
+            EdgeList.forEach(edge -> ppEdge((JSONObject) edge));
+
+        } catch (ParseException | IOException e) {
+            e.printStackTrace();
+        }
+        return true;
+    }
+
+    private void ppEdge(JSONObject edge) {
+        if(edge != null) {
+            int src = ((Long) edge.get("src")).intValue();
+            int dest = ((Long) edge.get("dest")).intValue();
+            double w = (double) edge.get("w");
+            try {
+
+                this.DWG.connect(src, dest, w);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+
+    private void ppNode(JSONObject node) {
+        if (node != null) {
+            int id = ((Long) node.get("id")).intValue();
+            String pos = (String) node.get("pos");
+            Double[] d = {Double.parseDouble(pos.split(",")[0]), Double.parseDouble(pos.split(",")[1])};
+            GeoLocation g = new GeoLocationObj(d[0], d[1], 0);
+            NodeData n = new NodeDataObj(id, g);
+            this.DWG.addNode(n);
+        }
     }
 
     private boolean BFS_Algo(NodeData node) {
