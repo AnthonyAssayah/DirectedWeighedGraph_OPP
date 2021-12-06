@@ -190,7 +190,7 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
      */
     @Override
     public boolean save(String file) throws IOException {
-/*
+
         JSONObject Json = new JSONObject();
         JSONArray nodes_arr = new JSONArray();
         JSONArray edges_arr = new JSONArray();
@@ -206,7 +206,7 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
             My_nodes.put("pos", v.getLocation());
             My_nodes.put("id", v.getKey());
 
-            nodes_arr.put(My_nodes);
+            nodes_arr.add(My_nodes);
 
             Iterator<EdgeData> iterEdges = getGraph().edgeIter(v.getKey());
 
@@ -218,7 +218,7 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
                 My_edges.put("w", e.getWeight());
                 My_edges.put("dest", e.getDest());
 
-                edges_arr.put(My_edges);
+                edges_arr.add(My_edges);
             }
         }
         Json.put("Nodes", nodes_arr);
@@ -233,8 +233,7 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
             e.printStackTrace();
             //return false           // ??
         }
-        return true;*/
-        return false;
+        return true;
     }
 
     /**
