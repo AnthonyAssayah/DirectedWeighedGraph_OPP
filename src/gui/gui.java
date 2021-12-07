@@ -10,7 +10,6 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.util.Iterator;
 
-
 public class gui {
 
     public static void main(String[] args){
@@ -61,21 +60,23 @@ public class gui {
         private double min_y = Double.MAX_VALUE;
         private double max_x = 0;
         private double max_y = 0;
+        private final int nodeSize = 7;
+        private final int margin = 50;
+        private final int indexOffset = 8;
+        private final int arrowTipSize = 10;
 
         public void paint(Graphics g) {
 
             Graphics2D g2d = (Graphics2D) g;
-            g2d.setColor(new Color(3, 60, 203));
             g2d.setStroke(new BasicStroke(2));
 
             DirectedWeightedGraphAlgorithms DWG = new DirectedWeightedGraphAlgorithmsObj();
-            DWG.load("data/G1.json");
+            DWG.load("data/G3.json");
 
             updatePrivateValues(DWG.getGraph());
+            g2d.setColor(new Color(3, 60, 203));
+            drawEdges(g2d, DWG.getGraph());
             drawNodes(g2d, DWG.getGraph());
-            drawCities(g2d, DWG.getGraph());
-            g2d.drawLine(0,487, 500, 487);
-            g2d.drawLine(487,0, 487, 440);
         }
         public void drawNodes(Graphics2D g2d, DirectedWeightedGraph DWG) {
 
@@ -83,28 +84,31 @@ public class gui {
             while (it.hasNext()) {
                 NodeData node = it.next();
                 GeoLocation loc = node.getLocation();
-                g2d.drawOval((int)algoX(loc.x()), (int)algoY(loc.y()), 5, 5);
+                g2d.setColor(new Color(229, 14, 14));
+                g2d.fillOval((int)algoX(loc.x()) - (this.nodeSize/2), (int)algoY(loc.y()) - (this.nodeSize/2), this.nodeSize, this.nodeSize);
+                g2d.setColor(new Color(0, 0, 0));
+                g2d.drawString(node.getKey() + "", (int)algoX(loc.x()) - (this.nodeSize/2) + this.indexOffset, (int)algoY(loc.y()) - (this.nodeSize/2) + this.indexOffset + 5);
             }
         }
-        public void drawCities(Graphics2D g2d, DirectedWeightedGraph DWG) {
+        public void drawEdges(Graphics2D g2d, DirectedWeightedGraph DWG) {
 
             Iterator<EdgeData> it = DWG.edgeIter();
             while (it.hasNext()) {
                 EdgeData edge = it.next();
                 GeoLocation src = DWG.getNode(edge.getSrc()).getLocation();
                 GeoLocation dest = DWG.getNode(edge.getDest()).getLocation();
-                g2d.drawLine((int)algoX(src.x()), (int)algoY(src.y()), (int)algoX(dest.x()), (int)algoY(dest.y()));
+                drawArrow(g2d, (int)algoX(src.x()), (int)algoY(src.y()), (int)algoX(dest.x()), (int)algoY(dest.y()), this.arrowTipSize);
             }
         }
         public double algoX(double x) {
             x = x - this.min_x;
-            x = (500 * 0.934) * (x / (this.max_x - this.min_x));
-            return x;
+            x = ((500 - (2 * this.margin)) * 0.968) * (x / (this.max_x - this.min_x));
+            return x + this.margin;
         }
         public double algoY(double y) {
             y = y - this.min_y;
-            y = (500 * 0.934) * (y / (this.max_y - this.min_y));
-            return y;
+            y = ((500 - (2 * this.margin)) * 0.88) * (y / (this.max_y - this.min_y));
+            return y + this.margin;
         }
         public void updatePrivateValues(DirectedWeightedGraph DWG) {
             Iterator<NodeData> it = DWG.nodeIter();
@@ -120,6 +124,27 @@ public class gui {
                 if (this.max_y < loc.y())
                     this.max_y = loc.y();
             }
+        }
+        public void drawArrow(Graphics2D g2d, int x1, int y1, int x2, int y2, int size) {
+
+            g2d.drawLine(x1,y1,x2,y2);
+
+            double angel1 = Math.atan((double) (y1 - y2) / (x1 - x2)) * (180 / Math.PI) + 180 + 20;
+            if (x2 < x1) {
+                angel1 += 180 % 360;
+            }
+            int xx1 = x2 + (int) (size * Math.cos(angel1 * (Math.PI / 180)));
+            int yy1 = y2 + (int) (size * Math.sin(angel1 * (Math.PI / 180)));
+
+            double angel2 = Math.atan((double) (y1 - y2) / (x1 - x2)) * (180 / Math.PI) + 180 - 20;
+            if (x2 < x1) {
+                angel2 += 180 % 360;
+            }
+
+            int xx2 = x2 + (int) (size * Math.cos(angel2 * (Math.PI / 180)));
+            int yy2 = y2 + (int) (size * Math.sin(angel2 * (Math.PI / 180)));
+
+            g2d.fillPolygon(new int[] {x2, xx1, xx2}, new int[] {y2, yy1, yy2}, 3 );
         }
     }
 }

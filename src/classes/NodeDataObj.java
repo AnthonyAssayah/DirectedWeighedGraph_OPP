@@ -13,6 +13,7 @@ public class NodeDataObj implements NodeData {
     private GeoLocation g;
     private String info;
     private int tag;
+    private double weight;
 
     private Map<Integer, EdgeData> edges;
 
@@ -25,11 +26,15 @@ public class NodeDataObj implements NodeData {
         this.g = NewNode.getLocation();
         this.info = NewNode.getInfo();
         this.tag = NewNode.getTag();
+        this.weight = NewNode.getWeight();
     }
-    public NodeDataObj(int key, GeoLocation g) {    //change +info +tag
+    public NodeDataObj(int key, GeoLocation g) {
 
         this.key = key;
         this.g = g;
+        this.tag = 0;
+        this.info = "White";
+        this.weight = 0;
 
         edges = new HashMap<>();
 

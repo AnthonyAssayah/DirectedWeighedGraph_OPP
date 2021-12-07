@@ -16,16 +16,13 @@ class EdgeDataObjTest {
     private NodeDataObj node2;
     private NodeDataObj node3;
     private NodeDataObj node4;
-    GeoLocation g1;
-    GeoLocation g2;
-    GeoLocation g3;
-    GeoLocation g4;
+
 
 
     public void new_edge1() {
         GeoLocation g1 = new GeoLocationObj(7, -1, 3.5);
         GeoLocation g2 = new GeoLocationObj(-55, 88.8, 6);
-        node1 = new NodeDataObj(4,g1);   /// need a default constructor for node ??
+        node1 = new NodeDataObj(4,g1);
         node2 = new NodeDataObj(-32,g2);
         edge1 = new EdgeDataObj(node1.getKey(),node2.getKey(), 6 );
     }
@@ -33,7 +30,7 @@ class EdgeDataObjTest {
     public void new_edge2() {
         GeoLocation g3 = new GeoLocationObj(-21,45.4,10.09);
         GeoLocation g4 = new GeoLocationObj(0.03,555,1080);
-        node3 = new NodeDataObj(47,g3);   /// need a default constructor for node ??
+        node3 = new NodeDataObj(47,g3);
         node4 = new NodeDataObj(33,g4);
         edge2 = new EdgeDataObj(node3.getKey(),node4.getKey(), 88.8 );
     }
@@ -74,8 +71,8 @@ class EdgeDataObjTest {
     void getInfo() {
         new_edge1();
         String info_1 = edge1.getInfo();
-        assertEquals(info_1,"");            /// need to keep "" as a default value or add info field to the
-        new_edge2();                              /// constructor as "White" for example (<-- more logic)
+        assertEquals(info_1,"");
+        new_edge2();
         String info_2 = edge2.getInfo();
         assertEquals(info_2,"");
     }
@@ -96,7 +93,7 @@ class EdgeDataObjTest {
     void getTag() {
         new_edge1();
         int tag_1 = edge1.getTag();
-        assertEquals(tag_1,0);                 //// same sheet as the info for tag ("0" or "-1")
+        assertEquals(tag_1,0);
         new_edge2();
         int tag_2 = edge2.getTag();
         assertEquals(tag_2,0);

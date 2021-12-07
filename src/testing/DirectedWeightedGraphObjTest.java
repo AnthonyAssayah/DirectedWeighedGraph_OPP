@@ -19,14 +19,10 @@ import static org.junit.jupiter.api.Assertions.*;
 
 class DirectedWeightedGraphObjTest {
 
-    private  DirectedWeightedGraph graph1 = new DirectedWeightedGraphObj();
-    private  DirectedWeightedGraph graph2 = new DirectedWeightedGraphObj();
+    private DirectedWeightedGraph graph = new DirectedWeightedGraphObj();
     private HashMap<Integer, NodeData> nodes;
     private HashMap<Integer, HashMap<Integer, EdgeDataObj>> edges;
-    private  int numOfNodes_1;
-    private  int numOfNodes_2;
-    private  int numOfEdges_1;
-    private  int numOfEdges_2;
+
     private  NodeData n0;
     private  NodeData n1;
     private  NodeData n2;
@@ -39,8 +35,8 @@ class DirectedWeightedGraphObjTest {
     private  EdgeData e4;
     private  EdgeData e5;
 
-    public void new_DWG1() {
-        graph1 = new DirectedWeightedGraphObj();
+    public void new_DWG1()  {
+        graph = new DirectedWeightedGraphObj();
         GeoLocation g0 = new GeoLocationObj(3, 10, 3);
         GeoLocation g1 = new GeoLocationObj(5, 20.5, 9);
         GeoLocation g2 = new GeoLocationObj(-12, 25, 6);
@@ -63,20 +59,20 @@ class DirectedWeightedGraphObjTest {
         nodes = new HashMap<Integer, NodeData>();
         edges = new HashMap<Integer, HashMap<Integer, EdgeDataObj>>();
 
-        graph1.addNode(n0);
-        graph1.addNode(n1);
-        graph1.addNode(n2);
-        graph1.addNode(n3);
-        graph1.addNode(n4);
+        graph.addNode(n0);
+        graph.addNode(n1);
+        graph.addNode(n2);
+        graph.addNode(n3);
+        graph.addNode(n4);
 
 
         try {
-            graph1.connect(n0.getKey(),n1.getKey(),e0.getWeight());
-            graph1.connect(n1.getKey(),n2.getKey(),e1.getWeight());
-            graph1.connect(n1.getKey(),n3.getKey(),e2.getWeight());
-            graph1.connect(n2.getKey(),n3.getKey(),e3.getWeight());
-            graph1.connect(n3.getKey(),n4.getKey(),e4.getWeight());
-            graph1.connect(n0.getKey(),n4.getKey(),e5.getWeight());
+            graph.connect(n0.getKey(),n1.getKey(),e0.getWeight());
+            graph.connect(n1.getKey(),n2.getKey(),e1.getWeight());
+            graph.connect(n1.getKey(),n3.getKey(),e2.getWeight());
+            graph.connect(n2.getKey(),n3.getKey(),e3.getWeight());
+            graph.connect(n3.getKey(),n4.getKey(),e4.getWeight());
+            graph.connect(n0.getKey(),n4.getKey(),e5.getWeight());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -88,26 +84,26 @@ class DirectedWeightedGraphObjTest {
     @Test
     void getNode() {
         new_DWG1();
-        NodeData key_1 = graph1.getNode(4);
+        NodeData key_1 = graph.getNode(4);
         assertEquals(key_1,n0);
-        NodeData key_2 = graph1.getNode(7);
+        NodeData key_2 = graph.getNode(7);
         assertEquals(key_2,n3);
-        NodeData key_3 = graph1.getNode(1);
+        NodeData key_3 = graph.getNode(1);
         assertNotEquals(key_3,n4);
     }
 
     @Test
     void getEdge() throws Exception {
         new_DWG1();
-        graph1.connect(n0.getKey(), n1.getKey(), e0.getWeight());
-        EdgeData edge = new EdgeDataObj((EdgeDataObj) graph1.getEdge(n0.getKey(), n1.getKey()));
+        graph.connect(n0.getKey(), n1.getKey(), e0.getWeight());
+        EdgeData edge = new EdgeDataObj((EdgeDataObj) graph.getEdge(n0.getKey(), n1.getKey()));
         assertEquals(edge.getSrc(), e0.getSrc());
         assertEquals(edge.getDest(), e0.getDest());
         assertEquals(edge.getWeight(), e0.getWeight());
 
-        graph1.connect(n1.getKey(), n2.getKey(), e1.getWeight());
-        EdgeData edge2 = new EdgeDataObj((EdgeDataObj) graph1.getEdge(n1.getKey(), n2.getKey()));
-        assertNotEquals(edge2.getWeight(), e1.getWeight());
+        graph.connect(n1.getKey(), n2.getKey(), e1.getWeight());
+        EdgeData edge2 = new EdgeDataObj((EdgeDataObj) graph.getEdge(n1.getKey(), n2.getKey()));
+        assertEquals(edge2.getWeight(), e1.getWeight());
 
     }
 
@@ -116,33 +112,33 @@ class DirectedWeightedGraphObjTest {
         new_DWG1();
         GeoLocation g = new GeoLocationObj(11, 22, 6);
         NodeData new_node = new NodeDataObj(2,g);
-        int s = graph1.nodeSize();
-        this.graph1.addNode(new_node);
-        int t = graph1.nodeSize();
+        int s = graph.nodeSize();
+        this.graph.addNode(new_node);
+        int t = graph.nodeSize();
         assertEquals(s+1,t);
         new_DWG1();
         NodeData new_node2 = new NodeDataObj((NodeDataObj) n0);
-        this.graph1.addNode(new_node2);
-        int w = graph1.nodeSize();
+        this.graph.addNode(new_node2);
+        int w = graph.nodeSize();
         assertEquals(s,w);
     }
 
     @Test
     void connect() throws Exception {
         new_DWG1();
-        graph1.connect(n0.getKey(), n1.getKey(), e0.getWeight());
-        graph1.connect(n1.getKey(), n2.getKey(), e1.getWeight());
-        int s = graph1.edgeSize();
-        graph1.connect(n1.getKey(), n3.getKey(), e2.getWeight());
-        int t = graph1.edgeSize();
-        assertEquals(s+1,t);
+        graph.connect(n0.getKey(), n1.getKey(), e0.getWeight()); // already exist in graph1
+        graph.connect(n1.getKey(), n2.getKey(), e1.getWeight()); // already exist in graph1
+        int s = graph.edgeSize();
+        graph.connect(n1.getKey(), n3.getKey(), e2.getWeight()); // already exist in graph1
+        int t = graph.edgeSize();
+        assertEquals(s,t);
 
         new_DWG1();
-        graph1.connect(n0.getKey(), n1.getKey(), e0.getWeight());
-        graph1.connect(n1.getKey(), n2.getKey(), e1.getWeight());
-        graph1.connect(n1.getKey(), n2.getKey(), e1.getWeight());
-        int w = graph1.edgeSize();
-        assertEquals(w,2);
+        graph.connect(n4.getKey(), n2.getKey(), e0.getWeight());
+        graph.connect(n1.getKey(), n3.getKey(), e1.getWeight());  // already exist in graph1
+        graph.connect(n4.getKey(), n4.getKey(), e2.getWeight());  // can't exist
+        int w = graph.edgeSize();
+        assertEquals(w,t+1);
 
 
     }
@@ -151,7 +147,7 @@ class DirectedWeightedGraphObjTest {
     void nodeIter() {
         new_DWG1();
         LinkedList<Integer> list = new LinkedList<>();
-        Iterator<NodeData> iterNodes = this.graph1.nodeIter();
+        Iterator<NodeData> iterNodes = this.graph.nodeIter();
         list.add(n0.getKey());
         list.add(n1.getKey());
         list.add(n2.getKey());
@@ -161,6 +157,7 @@ class DirectedWeightedGraphObjTest {
         while (iterNodes.hasNext()) {
             NodeData v = iterNodes.next();
             assertEquals(true, list.contains(v.getKey()));
+            System.out.println(v.getKey());
             count++;
         }
         assertEquals(count, list.size());
@@ -169,22 +166,22 @@ class DirectedWeightedGraphObjTest {
     @Test
     void edgeIter() {
         new_DWG1();
-        Iterator<EdgeData> iterEdges = this.graph1.edgeIter();
+        Iterator<EdgeData> iterEdges = this.graph.edgeIter();
         int counter = 0;
         while (iterEdges.hasNext()) {
 
             EdgeData e = iterEdges.next();
-            assertEquals(this.graph1.getEdge(e.getSrc(),e.getDest()), e);
+            assertEquals(this.graph.getEdge(e.getSrc(),e.getDest()), e);
             counter++;
         }
 
-        assertEquals(counter, this.graph1.edgeSize());
+        assertEquals(counter, this.graph.edgeSize());
         }
 
     @Test
     void testEdgeIter() {
         new_DWG1();
-        Iterator<EdgeData> iterEdges = this.graph1.edgeIter(n1.getKey());
+        Iterator<EdgeData> iterEdges = this.graph.edgeIter(n1.getKey());
         List<EdgeData> list = new LinkedList<>();
         list.add(e1);
         list.add(e2);
@@ -192,7 +189,7 @@ class DirectedWeightedGraphObjTest {
 
         while (iterEdges.hasNext()) {
             EdgeData e = iterEdges.next();
-            assertEquals(this.graph1.getEdge(e.getSrc(),e.getDest()), e);
+            assertEquals(this.graph.getEdge(e.getSrc(),e.getDest()), e);
             counter++;
 
         }
@@ -202,51 +199,72 @@ class DirectedWeightedGraphObjTest {
     @Test
     void removeNode() {
         new_DWG1();
-        int t = this.graph1.nodeSize();
+        int t = this.graph.nodeSize();
         System.out.println(t);
-        System.out.println(this.graph1.edgeSize());
-        this.graph1.removeNode(n1.getKey());
-        int s = this.graph1.nodeSize();
+       // System.out.println(this.graph1.edgeSize());
+        this.graph.removeNode(n1.getKey());
+        this.graph.removeNode(n2.getKey());
+        int s = this.graph.nodeSize();
         System.out.println(s);
-        System.out.println(this.graph1.edgeSize());
-        assertEquals(t-1,s);
+        //System.out.println(this.graph1.edgeSize());
+        assertEquals(t-2,s);
 
 
     }
 
     @Test
     void removeEdge() {
+        new_DWG1();
+        int s = this.graph.edgeSize();
+        graph.removeEdge(e0.getSrc(),e0.getDest());
+        int t = this.graph.edgeSize();
+        assertEquals(s-1,t);
+        graph.removeEdge(e0.getSrc(),e0.getDest()); // already removed
+        assertEquals(s-1,t);
+
+        graph.removeEdge(e1.getSrc(),e2.getDest());  // doesn't exist in graph1
+        assertEquals(s-1,t);
     }
 
     @Test
     void nodeSize() {
         new_DWG1();
-        assertEquals(5,graph1.nodeSize());
+        assertEquals(5,graph.nodeSize());
 
         GeoLocation g = new GeoLocationObj(11, 22, 6);
         NodeData new_node = new NodeDataObj(2,g);
-        this.graph1.addNode(new_node);
-        assertNotEquals(5,graph1.nodeSize());
+        this.graph.addNode(new_node);
+        assertNotEquals(5,graph.nodeSize());
 
     }
 
     @Test
     void edgeSize() throws Exception {
         new_DWG1();
-        assertEquals(6,graph1.edgeSize());
+        assertEquals(6,graph.edgeSize());
 
-        System.out.println(graph1.edgeSize());
-        graph1.connect(n4.getKey(), n0.getKey(), 6);
-        System.out.println(graph1.edgeSize());
-        assertNotEquals(5,graph1.edgeSize());
+        System.out.println(graph.edgeSize());
+        graph.connect(n4.getKey(), n0.getKey(), 6);
+        System.out.println(graph.edgeSize());
+        assertNotEquals(5,graph.edgeSize());
 
-        graph1.connect(n2.getKey(), n4.getKey(), 4);
-        System.out.println(graph1.edgeSize());
-        assertEquals(8,graph1.edgeSize());
+        graph.connect(n2.getKey(), n4.getKey(), 4);
+        System.out.println(graph.edgeSize());
+        assertEquals(8,graph.edgeSize());
 
     }
 
     @Test
     void getMC() {
+        new_DWG1();
+        assertEquals(graph.getMC(),11);
+       // this.graph1.removeNode(n1.getKey());
+//        System.out.println(graph1.nodeSize());
+//        System.out.println(graph1.edgeSize());
+        graph.removeEdge(e0.getSrc(),e0.getDest());
+        graph.removeEdge(e1.getSrc(),e1.getDest());
+        graph.removeEdge(e2.getSrc(),e2.getDest());
+        assertEquals(graph.getMC(),14);
+
     }
 }

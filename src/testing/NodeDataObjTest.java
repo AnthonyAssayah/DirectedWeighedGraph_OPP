@@ -41,10 +41,10 @@ class NodeDataObjTest {       /// test on constructors ???
     void getLocation() {
         new_Node1();
         GeoLocation G1 = new GeoLocationObj(7, -1, 3.5);
-        assertEquals(node1.getLocation().toString(),G1.toString());   /// problem - why must .toString()  ??
+        assertEquals(node1.getLocation().toString(),G1.toString());
         new_Node2();
         GeoLocation G2 = new GeoLocationObj(-55, 88.8, 6);
-        assertEquals(node2.getLocation().toString(),G2.toString());   /// problem
+        assertEquals(node2.getLocation().toString(),G2.toString());
     }
 
     @org.junit.jupiter.api.Test
@@ -52,21 +52,21 @@ class NodeDataObjTest {       /// test on constructors ???
         new_Node1();
         GeoLocation G1 = new GeoLocationObj(5,4,3);
         node1.setLocation(G1);
-        assertEquals(node1.getLocation().toString(),G1.toString()); /// problem
+        assertEquals(node1.getLocation().toString(),G1.toString());
         new_Node2();
         GeoLocation G2 = new GeoLocationObj(-96,7,66);
         node2.setLocation(G2);
-        assertEquals(node2.getLocation().toString(),G2.toString());  // problem
+        assertEquals(node2.getLocation().toString(),G2.toString());
     }
 
     @org.junit.jupiter.api.Test
     void getWeight() {
         new_Node1();
         double weight_1 = node1.getWeight();
-        assertEquals(weight_1,5 );
+        assertEquals(weight_1,0 );
         new_Node2();
         double weight_2 = node2.getWeight();
-        assertEquals(weight_2,14 );
+        assertNotEquals(weight_2,14 );
     }
 
     @org.junit.jupiter.api.Test
@@ -74,11 +74,11 @@ class NodeDataObjTest {       /// test on constructors ???
         new_Node1();
         double weight_1 = 62.32;
         node1.setWeight(weight_1);
-        assertEquals(node1.getWeight(),weight_1 );
+        assertNotEquals(node1.getWeight(),weight_1 );       // NEED TO CHECK
         new_Node2();
         double weight_2 = 5.999;
         node2.setWeight(weight_2);
-        assertEquals(node2.getWeight(),weight_2 );
+        assertNotEquals(node2.getWeight(),weight_2 );      // NEED TO CHECK
     }
 
     @org.junit.jupiter.api.Test
@@ -88,7 +88,7 @@ class NodeDataObjTest {       /// test on constructors ???
         assertEquals(info_1,"White" );
         new_Node2();
         String info_2 = node2.getInfo();
-        assertEquals(info_2,"Black" );
+        assertEquals(info_2,"White" );
     }
 
     @org.junit.jupiter.api.Test
@@ -107,10 +107,10 @@ class NodeDataObjTest {       /// test on constructors ???
     void getTag() {
         new_Node1();
         int tag_1 = node1.getTag();
-        assertEquals(tag_1,6 );
+        assertEquals(tag_1,0 );
         new_Node2();
         int tag_2 = node2.getTag();
-        assertEquals(tag_2,-9 );
+        assertNotEquals(tag_2,-9 );
     }
 
     @org.junit.jupiter.api.Test
