@@ -54,13 +54,10 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public EdgeData getEdge(int src, int dest) {
-        //return (this.edges.get(src) == null) ? null : this.edges.get(src).get(dest);
-
-          if (this.nodes.containsKey(src) && this.nodes.containsKey(dest)) {
-                      return this.edges.get(src).get(dest);
-                  }
-                  return null;
-
+        if (this.nodes.containsKey(src) && this.nodes.containsKey(dest)) {
+            return this.edges.get(src).get(dest);
+        }
+        return null;
     }
 
     /**
@@ -154,8 +151,8 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
     public Iterator<EdgeData> edgeIter() {
         return new Iterator<EdgeData>() {
             Iterator<HashMap<Integer, EdgeDataObj>> iter = edges.values().iterator();
-            Iterator<EdgeDataObj> temp = iter.next().values().iterator();
-
+            Iterator<EdgeDataObj> temp = null;
+            int MC = mc;
             @Override
             public void remove() {
                 Iterator.super.remove();
@@ -168,10 +165,13 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
 
             @Override
             public boolean hasNext() {
-                if (!temp.hasNext()) {
+                if (MC != mc) {
+                    throw new RuntimeException();
+                }
+                if (temp == null || !temp.hasNext()) {
                     if (iter.hasNext()) {
                         temp = iter.next().values().iterator();
-                        return true;
+                        return (temp.hasNext());
                     }
                     return false;
                 }
@@ -180,7 +180,11 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
 
             @Override
             public EdgeData next() throws NoSuchElementException {
+                if (MC != mc) {
+                    throw new RuntimeException();
+                }
                 if (!temp.hasNext()) {
+
                     if (iter.hasNext()) {
                         temp = iter.next().values().iterator();
                         return temp.next();
@@ -201,7 +205,26 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public Iterator<EdgeData> edgeIter(int node_id) {
-        return null;
+        return new Iterator<EdgeData>() {
+            Iterator<EdgeDataObj> itr = edges.get(node_id).values().iterator();
+            int MC = mc;
+
+            @Override
+            public boolean hasNext() {
+                if (MC != mc) {
+                    throw new RuntimeException();
+                }
+                return itr.hasNext();
+            }
+
+            @Override
+            public EdgeData next() {
+                if (MC != mc) {
+                    throw new RuntimeException();
+                }
+                return itr.next();
+            }
+        };
     }
 
     /**
@@ -219,15 +242,17 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
         }
         this.edges.remove(key);
 
-        while (it.hasNext()) {
-            EdgeData a = it.next().get(key);
-            if (a != null) {
-                this.removeEdge(a.getSrc(), a.getDest());
+        for (HashMap<Integer, EdgeDataObj> hash : this.edges.values()) {
+            if (hash.get(key) != null) {
+                this.removeEdge(hash.get(key).getSrc(), hash.get(key).getDest());
                 num_of_Edges--;
                 mc++;
             }
         }
+        NodeData temp = this.nodes.get(key);
         this.nodes.remove(key);
+        mc++;
+        num_of_Nodes--;
         return temp;
     }
 
@@ -250,7 +275,6 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
         }
         return null;
     }
-
     /**
      * Returns the number of vertices (nodes) in the graph.
      * Note: this method should run in O(1) time.
