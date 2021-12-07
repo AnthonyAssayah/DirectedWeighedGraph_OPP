@@ -246,7 +246,7 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
         while (iterNodes.hasNext()) {
             NodeData v = iterNodes.next();
             My_nodes = new JSONObject();
-            My_nodes.put("pos", v.getLocation());
+            My_nodes.put("pos", v.getLocation().x() + "," + v.getLocation().y() + "," + v.getLocation().z());
             My_nodes.put("id", v.getKey());
             nodes_arr.add(My_nodes);
             Iterator<EdgeData> iterEdges = getGraph().edgeIter(v.getKey());
