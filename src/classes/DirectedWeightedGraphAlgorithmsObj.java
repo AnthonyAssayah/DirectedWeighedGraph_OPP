@@ -224,7 +224,9 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
      */
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
-        return null;
+        List<NodeData> visited = new LinkedList<>();
+
+        return visited;
     }
 
     /**
@@ -391,5 +393,6 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
 
         }
         return dist;
+
     }
 }
