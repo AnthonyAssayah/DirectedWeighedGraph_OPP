@@ -1,12 +1,12 @@
 package classes;
 
-import java.util.*;
-
 import api.DirectedWeightedGraph;
 import api.EdgeData;
 import api.NodeData;
 
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.NoSuchElementException;
 import java.util.function.Consumer;
 
 public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
@@ -238,6 +238,7 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
         if (this.nodes.get(key) == null) {
             return null;
         }
+
         this.edges.remove(key);
 
         for (HashMap<Integer, EdgeDataObj> hash : this.edges.values()) {
