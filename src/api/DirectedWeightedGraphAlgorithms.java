@@ -91,4 +91,5 @@ public interface DirectedWeightedGraphAlgorithms {
      * @return true - iff the graph was successfully loaded.
      */
     public boolean load(String file);
+
 }

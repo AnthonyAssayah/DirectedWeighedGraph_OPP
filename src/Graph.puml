@@ -1,0 +1,182 @@
+@startuml
+'https://plantuml.com/class-diagram
+
+
+class DirectedWeightedGraphObj
+class DirectedWeightedGraphAlgorithmsObj
+class Ex2
+class gui
+interface NodeData
+interface EdgeData
+interface GeoLocation
+interface DirectedWeightedGraph
+interface DirectedWeightedGraphAlgorithms
+class NodeDataObj
+class EdgeDataObj
+class GeoLocationObj
+
+
+
+DirectedWeightedGraphAlgorithmsObj <.. gui
+NodeDataObj "1" *-- "many" DirectedWeightedGraphObj
+EdgeDataObj "1" *-- "many" DirectedWeightedGraphObj
+NodeData <.. NodeDataObj
+EdgeData <.. EdgeDataObj
+GeoLocation <.. GeoLocationObj
+DirectedWeightedGraphAlgorithmsObj -- Ex2
+gui -- Ex2
+
+DirectedWeightedGraph <|.. DirectedWeightedGraphObj
+GeoLocationObj <|.. NodeDataObj
+DirectedWeightedGraphAlgorithms <..  DirectedWeightedGraphAlgorithmsObj
+DirectedWeightedGraph <.. Ex2
+DirectedWeightedGraphAlgorithms <.. Ex2
+DirectedWeightedGraphAlgorithmsObj -- DirectedWeightedGraphObj
+
+interface NodeData {
+
+        +getKey(): int
+        +getLocation(): GeoLocation
+        +setLocation(GeoLocation p): void
+        +getWeight(): double
+        +setWeight(double w): void
+        +getInfo(): double
+        +setInfo(String s): void
+        +getTag(): int
+        +setTag(int t): void
+
+}
+
+class NodeDataObj {
+
+        -int key;
+        -GeoLocation g;
+        -String info;
+        -int tag;
+        -private double weight;
+
+        +NodeDataObj (NewNode)
+        +NodeDataObj(int key, GeoLocation g)
+}
+
+interface EdgeData {
+
+        +getSrc(): int
+        +getDest(): int
+        +getWeight(): double
+        +setWeight(double w): void
+        +getInfo(): double
+        +setInfo(String s): void
+        +getTag(): int
+        +setTag(int t): void
+
+}
+
+class EdgeDataObj {
+
+        -int src
+        -int dest;
+        - double weight;
+        - String info;
+        - int tag;
+
+        +EdgeDataObj(EdgeDataObj other)
+        +EdgeDataObj(int src, int dest, double weight)
+
+}
+
+interface GeoLocation {
+
+        + x(): double
+        + y(): double
+        + z(): double
+        + distance(GeoLocation g): double
+
+}
+
+class GeoLocationObj {
+
+        -double x
+        -double y
+        -double z
+
+        +GeoLocationObj(GeoLocationObj other)
+        +GeoLocationObj(double x, double y, double z)
+
+
+}
+
+interface DirectedWeightedGraph {
+
+        +getNode(int key): NodeData
+        +getEdge(int src, int dest): EdgeData
+        +connect(int src, int dest, double w): void
+        +nodeIter(): Iterator<NodeData>
+        +edgeIter(): Iterator<EdgeData>
+        +edgeIter(int node_id): Iterator<EdgeData>
+        +removeNode(int key): NodeData
+        +removeEdge(int src, int dest): EdgeData
+        +nodeSize(): int
+        +edgeSize(): int
+        +getMC(): int
+
+}
+
+class DirectedWeightedGraphObj {
+
+         -HashMap<Integer, NodeData> nodes;
+         -HashMap<Integer, HashMap<Integer, EdgeDataObj>> edges;
+         -int num_of_Nodes;
+         -int num_of_Edges;
+         -int mc;
+
+        +DirectedWeightedGraphObj()
+        +DirectedWeightedGraphObj(DirectedWeightedGraph graph)
+}
+
+interface DirectedWeightedGraphAlgorithms {
+
+        +init(DirectedWeightedGraph g):void
+        +getGraph(): DirectedWeightedGraph
+        +copy(): DirectedWeightedGraph
+        +isConnected(): boolean
+        +shortestPathDist(int src, int dest): double
+        +shortestPath(int src, int dest): List<NodeData>
+        +center(): NodeData
+        +tsp(List<NodeData> cities): List<NodeData>
+        +save(String file): boolean
+        +load(String file): boolean
+        +getMC(): int
+
+
+
+}
+
+class DirectedWeightedGraphAlgorithmsObj {
+
+         -DirectedWeightedGraph DWG
+
+
+        +DirectedWeightedGraphAlgorithmsObj()
+        -ppEdge(JSONObject edge): void
+        -ppNode(JSONObject node): void
+        -BFS_Algo(NodeData node):boolean
+        -Dijkstra(NodeData src, NodeData dst): double
+
+}
+class Ex2 {
+
+         -DirectedWeightedGraph DWG
+
+
+        +getGrapg(String json_file): DirectedWeightedGraph
+        +getGrapgAlgo(String json_file): DirectedWeightedGraphAlgorithms
+        +runGUI(String json_file): void
+
+}
+
+
+
+
+
+@enduml

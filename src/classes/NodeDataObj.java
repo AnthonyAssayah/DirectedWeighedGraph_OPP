@@ -1,6 +1,6 @@
 package classes;
 
-import api.EdgeData;
+
 import api.GeoLocation;
 import api.NodeData;
 
@@ -15,11 +15,8 @@ public class NodeDataObj implements NodeData {
     private int tag;
     private double weight;
 
-    private Map<Integer, EdgeData> edges;
 
-    public Map<Integer, EdgeData> getEdges() {
-        return this.edges;
-    }
+
     public NodeDataObj ( NodeDataObj NewNode) {
 
         this.key = NewNode.getKey();
@@ -35,9 +32,14 @@ public class NodeDataObj implements NodeData {
         this.tag = 0;
         this.info = "White";
         this.weight = 0;
+    }
+    public NodeDataObj(int key, GeoLocation g, double weight) {
 
-        edges = new HashMap<>();
-
+        this.key = key;
+        this.g = g;
+        this.tag = 0;
+        this.info = "White";
+        this.weight = weight;
     }
 
 
@@ -78,7 +80,7 @@ public class NodeDataObj implements NodeData {
      */
     @Override
     public double getWeight() {
-        return 0;
+        return this.weight;
     }
 
     /**
@@ -88,7 +90,7 @@ public class NodeDataObj implements NodeData {
      */
     @Override
     public void setWeight(double w) {
-        return;
+        this.weight=w;
     }
 
     /**

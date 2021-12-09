@@ -33,6 +33,7 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
         this.num_of_Edges = graph.edgeSize();
         this.mc = graph.getMC();
     }
+
     /**
      * returns the node_data by the node_id,
      *
@@ -88,11 +89,8 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      * @param w    - positive weight representing the cost (aka time, price, etc) between src-->dest.
      */
     @Override
-    public void connect(int src, int dest, double w) throws Exception {
-        // if weight is negative
-        if ( w < 0) {
-                throw new Exception("Invalid input: weight must be positive");
-        }
+    public void connect(int src, int dest, double w)  {
+
         // if the src and the dest are the same node
         if (src == dest) {
             return;

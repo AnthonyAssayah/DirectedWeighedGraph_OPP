@@ -15,8 +15,11 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
 
     private DirectedWeightedGraph DWG;
 
+
+
     public DirectedWeightedGraphAlgorithmsObj() {
         this.DWG = new DirectedWeightedGraphObj();
+
     }
 
     /**
@@ -84,11 +87,27 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
         return true;
     }
 
-    public void resetTag(){
+    public void resetTag() {
         Iterator<NodeData> it2 = this.DWG.nodeIter();
         while (it2.hasNext()) {
             NodeData v = it2.next();
             v.setTag(0);
+        }
+    }
+
+    public void resetInfo() {
+        Iterator<NodeData> it2 = this.DWG.nodeIter();
+        while (it2.hasNext()) {
+            NodeData v = it2.next();
+            v.setInfo("White");
+        }
+    }
+
+    public void resetWeight() {
+        Iterator<NodeData> it2 = this.DWG.nodeIter();
+        while (it2.hasNext()) {
+            NodeData v = it2.next();
+            v.setWeight(Double.MAX_VALUE);
         }
     }
 
@@ -102,26 +121,18 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
      */
     @Override
     public double shortestPathDist(int src, int dest) {
-        System.out.println("enter func");
+
         NodeData source = DWG.getNode(src);
         NodeData destination = DWG.getNode(dest);
 
         if (source == null || destination == null) {
-            System.out.println("enter if 1");
+
             return -1;
         }
-        if (source == destination) {
-            System.out.println("enter if 2");
-            return 0;
-        }
+
+        return Dijkstra(this.DWG.getNode(src), this.DWG.getNode(dest));
 
 
-        double dist = Dijkstra(this.DWG.getNode(src), this.DWG.getNode(dest));
-        if (dist == Double.MAX_VALUE) {
-            System.out.println("enter if 3");
-            return -1;
-        }
-        return dist;
     }
 
 
@@ -140,20 +151,23 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
 
         // if the shortestPathDist between the src and dest is -1; it means that there isn't path between them
         if (shortestPathDist(src, dest) == -1) {
+
             return null;
         }
-
+        System.out.println("hiiii");
         List<NodeData> Nodelist = new LinkedList<>();
         NodeData source = this.DWG.getNode(src);
         NodeData destination = this.DWG.getNode(dest);
 
         // if the vertices are null return null
         if (source == null || destination == null) {
-            return null;        //maybe need to throw exception
+
+            return null;
         }
 
         // if the src and the dest are equal; just add it and return the list
         if (src == dest) {
+            System.out.println("hiiii");
             Nodelist.add(destination);
             return Nodelist;
         }
@@ -162,17 +176,33 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
 
         List<NodeData> reverse = new LinkedList<>();
         NodeData curr = destination;
-
-        while (curr.getTag() != -1) {       // while dest != src
+        System.out.println(curr.getKey());
+        System.out.println(curr.getTag());
+        while (curr.getTag() != 0) {// while dest != src
+            System.out.println("enter while");
             reverse.add(curr);
             curr = this.DWG.getNode(curr.getTag());
         }
-        Nodelist.add(source);
+
 
         for (int j = Nodelist.size() - 1; j >= 0; j--) {
+            System.out.println("reverse");
             reverse.add(Nodelist.get(j));
         }
-        return reverse;
+
+        List<NodeData> reverse2 = new LinkedList<>();
+        for(int k = reverse.size()-1; k >=0; k--) {
+
+            reverse2.add(reverse.get(k));
+        }
+        Nodelist.add(source);
+
+        for (int j = reverse2.size() - 1; j >= 0; j--) {
+            Nodelist.add(reverse.get(j));
+        }
+
+        return Nodelist;
+
     }
 
     /**
@@ -195,20 +225,24 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
         double min = Double.MAX_VALUE;
         NodeData ret = null;
         while (it.hasNext()) {
-
+            max = 0;
             it2 = this.DWG.nodeIter();
             NodeData node1 = it.next();
 
             while (it2.hasNext()) {
+
                 NodeData node2 = it2.next();
 
                 if (shortestPathDist(node1.getKey(), node2.getKey()) > max) {
                     max = shortestPathDist(node1.getKey(), node2.getKey());
+
                 }
-                if (max < min) {
-                    min = max;
-                    ret = node1;
-                }
+
+            }
+            if (max < min) {
+
+                min = max;
+                ret = node1;
             }
         }
         return ret;
@@ -224,6 +258,11 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
      */
     @Override
     public List<NodeData> tsp(List<NodeData> cities) {
+
+        List<NodeData> path = new LinkedList<>();
+
+
+
         return null;
     }
 
@@ -243,13 +282,16 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
         JSONObject My_nodes;
         JSONObject My_edges;
         Iterator<NodeData> iterNodes = getGraph().nodeIter();
+
         while (iterNodes.hasNext()) {
             NodeData v = iterNodes.next();
             My_nodes = new JSONObject();
             My_nodes.put("pos", v.getLocation().x() + "," + v.getLocation().y() + "," + v.getLocation().z());
             My_nodes.put("id", v.getKey());
             nodes_arr.add(My_nodes);
+
             Iterator<EdgeData> iterEdges = getGraph().edgeIter(v.getKey());
+
             while (iterEdges.hasNext()) {
                 EdgeData e = iterEdges.next();
                 My_edges = new JSONObject();
@@ -265,9 +307,9 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
             FileWriter fw = new FileWriter(file);
             fw.write(Json.toString());
             fw.close();
-        } catch (IOException e) { /// maybe add JsonException  ??
+        } catch (IOException e) {
             e.printStackTrace();
-            return false;          // ??
+            return false;
         }
         return true;
 
@@ -356,39 +398,53 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
     }
 
     private double Dijkstra(NodeData src, NodeData dst) {
-        System.out.println("enter djistra");
 
-        PriorityQueue<NodeData> pq = new PriorityQueue<>((n1, n2) -> Double.compare(n1.getWeight(), n2.getWeight()));
+
+        resetInfo();
+        resetTag();
+        resetWeight();
+      // System.out.println("djistra");
         double dist = Double.MAX_VALUE;
+        PriorityQueue<NodeData> pq = new PriorityQueue<>((n1, n2) -> Double.compare(n1.getWeight(), n2.getWeight()));
+
         src.setWeight(0);
         pq.add(src);
 
         while (!pq.isEmpty()) {
-            System.out.println("enter while 1 djistra");
             NodeData curr = pq.poll();
 
-            Iterator<EdgeData> edges = this.DWG.edgeIter(curr.getKey());
+              Iterator<EdgeData> it = this.DWG.edgeIter(curr.getKey());
+               while ( it.hasNext()) {
+                EdgeData e = it.next();
 
-            while (edges.hasNext()) {
-                System.out.println("enter while 2 djistra");
-                NodeData node = this.DWG.getNode(edges.next().getDest());
-                if (node.getInfo() == "White") {/// need to add info and tag ??
-                    System.out.println("enter while 3  djistra");
-                    if (node.getWeight() > curr.getWeight() + edges.next().getWeight()) {
-                        System.out.println("enter if djistra");
-                        node.setWeight(Math.min(node.getWeight(), curr.getWeight() + edges.next().getWeight()));
-                        //dist= Math.min(node.getWeight(), curr.getWeight() + edges.next().getWeight());
-                        node.setTag(curr.getKey());
+                if (e != null) {
+                    NodeData node = this.DWG.getNode(e.getDest());
+
+                    if (node.getInfo() == "White") {
+
+//                        System.out.println("node.getInfo() = "+node.getInfo());
+//                        System.out.println("node.getWeight() = "+node.getWeight());
+//                        System.out.println("curr.getWeight() = "+curr.getWeight());
+//                        System.out.println("e.getWeight() = "+e.getWeight());
+
+                        if (node.getWeight() > curr.getWeight() + e.getWeight()) {
+
+                            node.setWeight(Math.min(node.getWeight(), curr.getWeight() + e.getWeight()));
+                            node.setTag(curr.getKey());
+                        }
+                        pq.add(node);
                     }
-                    pq.add(node);
+                }
+                curr.setInfo("Black");
+                if (curr.getKey() == dst.getKey()) {
+                    return curr.getWeight();
                 }
             }
-            curr.setInfo("Black");
-            if (curr.getKey() == dst.getKey()) {
-                return curr.getWeight();
-            }
 
+        }
+        if (dist == Double.MAX_VALUE) {
 
+            return -1;
         }
         return dist;
     }
