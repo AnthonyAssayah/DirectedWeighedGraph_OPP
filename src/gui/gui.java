@@ -23,8 +23,6 @@ public class gui {
 
     public gui(DirectedWeightedGraphAlgorithms alg) {
 
-
-
         JFrame frame = new JFrame("My First GUI");
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         frame.setSize(this.screenSize[0], this.screenSize[1]);
@@ -43,6 +41,7 @@ public class gui {
         frame.setVisible(true);
 
     }
+
     public static JMenuBar makeMenueBar(JFrame frame, CustomPaintComponent CPC) {
         JMenuBar mb = new JMenuBar();
 
@@ -80,6 +79,7 @@ public class gui {
 
         return mb;
     }
+
     static class CustomPaintComponent extends Component {
 
         private DirectedWeightedGraphAlgorithms DWGA;
@@ -92,7 +92,8 @@ public class gui {
         private final int margin = 50;
         private final int indexOffset = 8;
         private final int arrowTipSize = 12;
-        private LinkedList<NodeData> nodes = null;
+        private LinkedList<NodeData> nodespath = null;
+        private LinkedList<NodeData> highlightnodes = null;
 
         public void paint(Graphics g) {
             Graphics2D g2d = (Graphics2D) g;
@@ -104,27 +105,41 @@ public class gui {
             updatePrivateValues(this.DWGA.getGraph());
             drawEdges(g2d);
             drawNodes(g2d);
-            System.out.println("hello" + nodes);
-            highLightPath(g2d, nodes);
+            highLightPath(g2d);
+            highLightNodes(g2d);
         }
+
         public void SetGraph(DirectedWeightedGraphAlgorithms DWG) {
 
             this.DWGA = DWG;
         }
+
         public DirectedWeightedGraphAlgorithms GetGraph() {
             return this.DWGA;
         }
+
         public void SetScreenSize(int[] ScreenSize) {
             this.ScreenSize = ScreenSize;
         }
+
         public int[] GetScreenSize() {
             return this.ScreenSize;
         }
-        public void SetNodes(LinkedList<NodeData> nodes) {
-            this.nodes = nodes;
+
+        public void SetNodesPath(LinkedList<NodeData> nodes) {
+            this.nodespath = nodes;
         }
-        public LinkedList<NodeData> GetNodes() {
-            return this.nodes;
+
+        public LinkedList<NodeData> GetNodesPath() {
+            return this.nodespath;
+        }
+
+        public void SetNodesHighlight(LinkedList<NodeData> nodes) {
+            this.highlightnodes = nodes;
+        }
+
+        public LinkedList<NodeData> GetNodesHighlight() {
+            return this.highlightnodes;
         }
         public void drawNodes(Graphics2D g2d) {
 
@@ -133,50 +148,58 @@ public class gui {
                 NodeData node = it.next();
                 GeoLocation loc = node.getLocation();
                 g2d.setColor(new Color(229, 14, 14));
-                g2d.fillOval((int)algoX(loc.x()) - (this.nodeSize/2), (int)algoY(loc.y()) - (this.nodeSize/2), this.nodeSize, this.nodeSize);
+                g2d.fillOval((int) algoX(loc.x()) - (this.nodeSize / 2), (int) algoY(loc.y()) - (this.nodeSize / 2), this.nodeSize, this.nodeSize);
                 g2d.setColor(new Color(0, 0, 0));
-                g2d.drawString(node.getKey() + "", (int)algoX(loc.x()) - (this.nodeSize/2) + this.indexOffset, (int)algoY(loc.y()) - (this.nodeSize/2) + this.indexOffset + 5);
+                g2d.drawString(node.getKey() + "", (int) algoX(loc.x()) - (this.nodeSize / 2) + this.indexOffset, (int) algoY(loc.y()) - (this.nodeSize / 2) + this.indexOffset + 5);
             }
         }
-        public void highLightNode(Graphics2D g2d, NodeData node) {
-            if (this.DWGA.getGraph().getNode(node.getKey()) != null) {
-                g2d.setColor(new Color(14, 255, 0));
-                g2d.drawOval((int)algoX(node.getLocation().x()) - (this.nodeSize/2), (int)algoY(node.getLocation().y()) - (this.nodeSize/2), this.nodeSize, this.nodeSize);
+
+        public void highLightNodes(Graphics2D g2d) {
+            if (this.highlightnodes == null) return;
+            g2d.setColor(new Color(255, 78, 0, 255));
+            for (int i = 0; i < this.highlightnodes.size(); i++) {
+                if (this.DWGA.getGraph().getNode(this.highlightnodes.get(i).getKey()) != null) {
+                    GeoLocation loc = this.DWGA.getGraph().getNode(this.highlightnodes.get(i).getKey()).getLocation();
+                    g2d.drawOval((int) algoX(loc.x()) - ((this.nodeSize + 2) / 2), (int) algoY(loc.y()) - ((this.nodeSize + 2) / 2), this.nodeSize + 2, this.nodeSize + 2);
+                }
             }
         }
-        public void highLightPath(Graphics2D g2d, LinkedList<NodeData> nodes) {
-            if (nodes == null) return;
+
+        public void highLightPath(Graphics2D g2d) {
+            if (this.nodespath == null) return;
+            g2d.setStroke(new BasicStroke(3));
             g2d.setColor(new Color(152, 0, 99));
-            //System.out.println("highlight: " + this.g2d);
-            for (int i = 0 ; i < nodes.size() - 1 ; i++) {
-                EdgeData edge = this.DWGA.getGraph().getEdge(nodes.get(i).getKey(), nodes.get(i + 1).getKey());
+            for (int i = 0; i < this.nodespath.size() - 1; i++) {
+                EdgeData edge = this.DWGA.getGraph().getEdge(this.nodespath.get(i).getKey(), this.nodespath.get(i + 1).getKey());
                 GeoLocation src = this.DWGA.getGraph().getNode(edge.getSrc()).getLocation();
                 GeoLocation dest = this.DWGA.getGraph().getNode(edge.getDest()).getLocation();
-                drawArrow(g2d, (int)algoX(src.x()), (int)algoY(src.y()), (int)algoX(dest.x()), (int)algoY(dest.y()));
-                //System.out.println((int)algoX(src.x()) + " " + (int)algoY(src.y()) + " " + (int)algoX(dest.x()) + " " + (int)algoY(dest.y()));
+                drawArrow(g2d, (int) algoX(src.x()), (int) algoY(src.y()), (int) algoX(dest.x()), (int) algoY(dest.y()));
             }
         }
+
         public void drawEdges(Graphics2D g2d) {
             g2d.setColor(new Color(3, 60, 203));
             Iterator<EdgeData> it = this.DWGA.getGraph().edgeIter();
-            //System.out.println("drawEdges: " + this.g2d);
             while (it.hasNext()) {
                 EdgeData edge = it.next();
                 GeoLocation src = this.DWGA.getGraph().getNode(edge.getSrc()).getLocation();
                 GeoLocation dest = this.DWGA.getGraph().getNode(edge.getDest()).getLocation();
-                drawArrow(g2d, (int)algoX(src.x()), (int)algoY(src.y()), (int)algoX(dest.x()), (int)algoY(dest.y()));
+                drawArrow(g2d, (int) algoX(src.x()), (int) algoY(src.y()), (int) algoX(dest.x()), (int) algoY(dest.y()));
             }
         }
+
         public double algoX(double x) {
             x = x - this.min_x;
             x = ((this.ScreenSize[0] - (2 * this.margin)) * 0.968) * (x / (this.max_x - this.min_x));
             return x + this.margin;
         }
+
         public double algoY(double y) {
             y = y - this.min_y;
             y = ((this.ScreenSize[1] - (2 * this.margin)) * 0.88) * (y / (this.max_y - this.min_y));
             return y + this.margin;
         }
+
         public void updatePrivateValues(DirectedWeightedGraph DWG) {
             Iterator<NodeData> it = DWG.nodeIter();
             while (it.hasNext()) {
@@ -192,9 +215,10 @@ public class gui {
                     this.max_y = loc.y();
             }
         }
+
         public void drawArrow(Graphics2D g2d, int x1, int y1, int x2, int y2) {
 
-            g2d.drawLine(x1,y1,x2,y2);
+            g2d.drawLine(x1, y1, x2, y2);
 
             double angel1 = Math.atan((double) (y1 - y2) / (x1 - x2)) * (180 / Math.PI) + 180 + 20;
             if (x2 < x1) {
@@ -211,9 +235,10 @@ public class gui {
             int xx2 = x2 + (int) (this.arrowTipSize * Math.cos(angel2 * (Math.PI / 180)));
             int yy2 = y2 + (int) (this.arrowTipSize * Math.sin(angel2 * (Math.PI / 180)));
 
-            g2d.fillPolygon(new int[] {x2, xx1, xx2}, new int[] {y2, yy1, yy2}, 3 );
+            g2d.fillPolygon(new int[]{x2, xx1, xx2}, new int[]{y2, yy1, yy2}, 3);
         }
     }
+
     public static class MenuDemo implements ActionListener, ItemListener {
 
         private JFrame frame;
@@ -234,8 +259,7 @@ public class gui {
                 case "Save":
                     if (this.CPC.GetGraph() == null) {
                         System.out.println("no graph to be saved");
-                    }
-                    else {
+                    } else {
                         final JFileChooser fc = new JFileChooser();
                         File file1 = new File("C:/Users/edanp/IdeaProjects/EX2_OOP/data");
                         fc.setCurrentDirectory(file1);
@@ -263,8 +287,7 @@ public class gui {
                         DirectedWeightedGraphAlgorithms _DWGA = new DirectedWeightedGraphAlgorithmsObj();
                         _DWGA.load(file.getPath());
                         DrawGraph(_DWGA);
-                    }
-                    else {
+                    } else {
                         System.out.println("Load Command canceled by user");
                     }
                     break;
@@ -368,8 +391,7 @@ public class gui {
                         DWGA.getGraph().removeNode(ID);
                         DrawGraph(DWGA);
                         JOptionPane.showMessageDialog(frame, "Node " + ID + " was successfully removed from the graph");
-                    }
-                    else {
+                    } else {
                         JOptionPane.showMessageDialog(frame, "Node " + ID + " does not exist in the graph");
                     }
                     break;
@@ -397,7 +419,7 @@ public class gui {
                     }
                     break;
                 case "Is Connected":
-                    JOptionPane.showMessageDialog(frame,"The graph is " + ((DWGA.isConnected()) ? "" : "not ") + "connected");
+                    JOptionPane.showMessageDialog(frame, "The graph is " + ((DWGA.isConnected()) ? "" : "not ") + "connected");
                     break;
                 case "Shortest Path":
                     ID1 = -1;
@@ -417,6 +439,8 @@ public class gui {
                         }
                     }
                     LinkedList<NodeData> list = (LinkedList<NodeData>) DWGA.shortestPath(ID1, ID2);
+                    this.CPC.SetNodesHighlight(list);
+                    DrawGraph(DWGA);
                     break;
                 case "TSP":
                     LinkedList<NodeData> tsplist = null;
@@ -429,30 +453,29 @@ public class gui {
                     for (String str : strIDs) {
                         try {
                             Integer.parseInt(str);
-                        }
-                        catch (NumberFormatException nfe) {
+                        } catch (NumberFormatException nfe) {
 
-                            JOptionPane.showMessageDialog(frame,"invalid input, found: " + str);
+                            JOptionPane.showMessageDialog(frame, "invalid input, found: " + str);
                             break;
                         }
                         if (DWGA.getGraph().getNode(Integer.parseInt(str)) != null) {
 
                             tsplist.add(DWGA.getGraph().getNode(Integer.parseInt(str)));
-                        }
-                        else {
-                            JOptionPane.showMessageDialog(frame,"the node " + str + " does no exist in the graph");
+                        } else {
+                            JOptionPane.showMessageDialog(frame, "the node " + str + " does no exist in the graph");
                             continue;
                         }
                     }
                     List<NodeData> a = DWGA.tsp(tsplist);
+                    this.CPC.SetNodesPath((LinkedList<NodeData>) a);
                     DrawGraph(DWGA);
-                    this.CPC.SetNodes((LinkedList<NodeData>) tsplist);
-                    this.CPC.repaint();
-
-
                     break;
                 case "Center":
                     NodeData node = DWGA.center();
+                    LinkedList<NodeData> nodes = new LinkedList<>();
+                    nodes.add(node);
+                    this.CPC.SetNodesHighlight(nodes);
+                    DrawGraph(DWGA);
                     break;
             }
         }
@@ -461,6 +484,7 @@ public class gui {
         public void itemStateChanged(ItemEvent e) {
             System.out.println(e.toString());
         }
+
         private void DrawGraph(DirectedWeightedGraphAlgorithms DWGA) {
             int[] screenSize = null;
             if (this.CPC != null) {
@@ -471,6 +495,7 @@ public class gui {
             this.CPC.SetScreenSize(screenSize);
             this.frame.add(this.CPC);
             this.frame.setVisible(true);
+            this.CPC.repaint();
         }
     }
 }

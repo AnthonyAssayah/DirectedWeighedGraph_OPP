@@ -358,41 +358,38 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
     }
 
     private double Dijkstra(NodeData src, NodeData dst) {
-        System.out.println("enter djistra");
 
-        PriorityQueue<NodeData> pq = new PriorityQueue<>((n1, n2) -> Double.compare(n1.getWeight(), n2.getWeight()));
         double dist = Double.MAX_VALUE;
+        PriorityQueue<NodeData> pq = new PriorityQueue<>((n1, n2) -> Double.compare(n1.getWeight(), n2.getWeight()));
+
         src.setWeight(0);
         pq.add(src);
 
         while (!pq.isEmpty()) {
-            System.out.println("enter while 1 djistra");
             NodeData curr = pq.poll();
 
-            Iterator<EdgeData> edges = this.DWG.edgeIter(curr.getKey());
+            Iterator<EdgeData> it = this.DWG.edgeIter(curr.getKey());
+            while ( it.hasNext()) {
+                EdgeData e = it.next();
 
-            while (edges.hasNext()) {
-                System.out.println("enter while 2 djistra");
-                NodeData node = this.DWG.getNode(edges.next().getDest());
-                if (node.getInfo() == "White") {/// need to add info and tag ??
-                    System.out.println("enter while 3  djistra");
-                    if (node.getWeight() > curr.getWeight() + edges.next().getWeight()) {
-                        System.out.println("enter if djistra");
-                        node.setWeight(Math.min(node.getWeight(), curr.getWeight() + edges.next().getWeight()));
-                        //dist= Math.min(node.getWeight(), curr.getWeight() + edges.next().getWeight());
-                        node.setTag(curr.getKey());
+                if (e != null) {
+                    NodeData node = this.DWG.getNode(e.getDest());
+
+                    if (node.getInfo() == "White") {
+
+                        if (node.getWeight() > curr.getWeight() + e.getWeight()) {
+
+                            node.setWeight(Math.min(node.getWeight(), curr.getWeight() + e.getWeight()));
+                        }
+                        pq.add(node);
                     }
-                    pq.add(node);
+                }
+                curr.setInfo("Black");
+                if (curr.getKey() == dst.getKey()) {
+                    return curr.getWeight();
                 }
             }
-            curr.setInfo("Black");
-            if (curr.getKey() == dst.getKey()) {
-                return curr.getWeight();
-            }
-
-
         }
         return dist;
-
     }
 }
