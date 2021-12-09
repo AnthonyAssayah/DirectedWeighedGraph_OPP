@@ -34,13 +34,13 @@ public class Ex2 {
      */
     public static void runGUI(String json_file) {
         DirectedWeightedGraphAlgorithms alg = getGrapgAlgo(json_file);
-        // ****** Add your code here ******
-        //
-        // ********************************
+        gui GUI = new gui(alg);
     }
     public static void main(String[] args) {
 
-        //gui GUI = new gui(args[0]);
-        gui GUI = new gui("C:/Users/user/IdeaProjects/EX2_OOP/data/G1.json");
+        //runGUI(args[0]);
+        runGUI("C:/Users/edanp/IdeaProjects/EX2_OOP/data/G1.json");
+
+
     }
 }

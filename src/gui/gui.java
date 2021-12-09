@@ -15,12 +15,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 
 public class gui {
 
     private final int[] screenSize = {750, 750};
 
-    public gui(String path) {
+    public gui(DirectedWeightedGraphAlgorithms alg) {
 
 
 
@@ -29,9 +30,7 @@ public class gui {
         frame.setSize(this.screenSize[0], this.screenSize[1]);
 
         CustomPaintComponent CPC = new CustomPaintComponent();
-        File file = new File(path);
-        DirectedWeightedGraphAlgorithms DWGA = new DirectedWeightedGraphAlgorithmsObj();
-        DWGA.load(file.getPath());
+        DirectedWeightedGraphAlgorithms DWGA = alg;
         CPC.SetGraph(DWGA);
         CPC.SetScreenSize(this.screenSize);
         frame.add(CPC);
@@ -76,9 +75,6 @@ public class gui {
         m3.add(m33);
         m3.add(m34);
 
-        JMenu m4 = new JMenu("Test");
-        mb.add(m4);
-
         JMenuItem[] JMI_Arr = {m11, m12, m21, m22, m23, m24, m31, m32, m33, m34};
         MenuDemo MD = new MenuDemo(JMI_Arr, frame, CPC);
 
@@ -96,18 +92,20 @@ public class gui {
         private final int margin = 50;
         private final int indexOffset = 8;
         private final int arrowTipSize = 12;
-        public Graphics2D g2d;
+        private LinkedList<NodeData> nodes = null;
 
         public void paint(Graphics g) {
-            this.g2d = (Graphics2D) g;
-            this.g2d.setStroke(new BasicStroke(2));
+            Graphics2D g2d = (Graphics2D) g;
+            g2d.setStroke(new BasicStroke(2));
 
             if (this.DWGA == null) {
                 this.DWGA = new DirectedWeightedGraphAlgorithmsObj();
             }
             updatePrivateValues(this.DWGA.getGraph());
-            drawEdges();
-            drawNodes();
+            drawEdges(g2d);
+            drawNodes(g2d);
+            System.out.println("hello" + nodes);
+            highLightPath(g2d, nodes);
         }
         public void SetGraph(DirectedWeightedGraphAlgorithms DWG) {
 
@@ -122,51 +120,51 @@ public class gui {
         public int[] GetScreenSize() {
             return this.ScreenSize;
         }
-        public void SetGraphics2D(Graphics2D g2d) {
-            this.g2d = g2d;
+        public void SetNodes(LinkedList<NodeData> nodes) {
+            this.nodes = nodes;
         }
-        public Graphics2D GetGraphics2D() {
-            return this.g2d;
+        public LinkedList<NodeData> GetNodes() {
+            return this.nodes;
         }
-        public void drawNodes() {
+        public void drawNodes(Graphics2D g2d) {
 
             Iterator<NodeData> it = this.DWGA.getGraph().nodeIter();
             while (it.hasNext()) {
                 NodeData node = it.next();
                 GeoLocation loc = node.getLocation();
-                this.g2d.setColor(new Color(229, 14, 14));
-                this.g2d.fillOval((int)algoX(loc.x()) - (this.nodeSize/2), (int)algoY(loc.y()) - (this.nodeSize/2), this.nodeSize, this.nodeSize);
-                this.g2d.setColor(new Color(0, 0, 0));
-                this.g2d.drawString(node.getKey() + "", (int)algoX(loc.x()) - (this.nodeSize/2) + this.indexOffset, (int)algoY(loc.y()) - (this.nodeSize/2) + this.indexOffset + 5);
+                g2d.setColor(new Color(229, 14, 14));
+                g2d.fillOval((int)algoX(loc.x()) - (this.nodeSize/2), (int)algoY(loc.y()) - (this.nodeSize/2), this.nodeSize, this.nodeSize);
+                g2d.setColor(new Color(0, 0, 0));
+                g2d.drawString(node.getKey() + "", (int)algoX(loc.x()) - (this.nodeSize/2) + this.indexOffset, (int)algoY(loc.y()) - (this.nodeSize/2) + this.indexOffset + 5);
             }
         }
-        public void highLightNode(NodeData node) {
+        public void highLightNode(Graphics2D g2d, NodeData node) {
             if (this.DWGA.getGraph().getNode(node.getKey()) != null) {
-                this.g2d.setColor(new Color(14, 255, 0));
-                this.g2d.drawOval((int)algoX(node.getLocation().x()) - (this.nodeSize/2), (int)algoY(node.getLocation().y()) - (this.nodeSize/2), this.nodeSize, this.nodeSize);
+                g2d.setColor(new Color(14, 255, 0));
+                g2d.drawOval((int)algoX(node.getLocation().x()) - (this.nodeSize/2), (int)algoY(node.getLocation().y()) - (this.nodeSize/2), this.nodeSize, this.nodeSize);
             }
         }
-        public void highLightPath(LinkedList<NodeData> nodes) {
+        public void highLightPath(Graphics2D g2d, LinkedList<NodeData> nodes) {
             if (nodes == null) return;
-            this.g2d.setColor(new Color(152, 0, 99));
+            g2d.setColor(new Color(152, 0, 99));
             //System.out.println("highlight: " + this.g2d);
             for (int i = 0 ; i < nodes.size() - 1 ; i++) {
                 EdgeData edge = this.DWGA.getGraph().getEdge(nodes.get(i).getKey(), nodes.get(i + 1).getKey());
                 GeoLocation src = this.DWGA.getGraph().getNode(edge.getSrc()).getLocation();
                 GeoLocation dest = this.DWGA.getGraph().getNode(edge.getDest()).getLocation();
-                drawArrow((int)algoX(src.x()), (int)algoY(src.y()), (int)algoX(dest.x()), (int)algoY(dest.y()));
+                drawArrow(g2d, (int)algoX(src.x()), (int)algoY(src.y()), (int)algoX(dest.x()), (int)algoY(dest.y()));
                 //System.out.println((int)algoX(src.x()) + " " + (int)algoY(src.y()) + " " + (int)algoX(dest.x()) + " " + (int)algoY(dest.y()));
             }
         }
-        public void drawEdges() {
-            this.g2d.setColor(new Color(3, 60, 203));
+        public void drawEdges(Graphics2D g2d) {
+            g2d.setColor(new Color(3, 60, 203));
             Iterator<EdgeData> it = this.DWGA.getGraph().edgeIter();
             //System.out.println("drawEdges: " + this.g2d);
             while (it.hasNext()) {
                 EdgeData edge = it.next();
                 GeoLocation src = this.DWGA.getGraph().getNode(edge.getSrc()).getLocation();
                 GeoLocation dest = this.DWGA.getGraph().getNode(edge.getDest()).getLocation();
-                drawArrow((int)algoX(src.x()), (int)algoY(src.y()), (int)algoX(dest.x()), (int)algoY(dest.y()));
+                drawArrow(g2d, (int)algoX(src.x()), (int)algoY(src.y()), (int)algoX(dest.x()), (int)algoY(dest.y()));
             }
         }
         public double algoX(double x) {
@@ -194,9 +192,9 @@ public class gui {
                     this.max_y = loc.y();
             }
         }
-        public void drawArrow(int x1, int y1, int x2, int y2) {
+        public void drawArrow(Graphics2D g2d, int x1, int y1, int x2, int y2) {
 
-            this.g2d.drawLine(x1,y1,x2,y2);
+            g2d.drawLine(x1,y1,x2,y2);
 
             double angel1 = Math.atan((double) (y1 - y2) / (x1 - x2)) * (180 / Math.PI) + 180 + 20;
             if (x2 < x1) {
@@ -213,7 +211,7 @@ public class gui {
             int xx2 = x2 + (int) (this.arrowTipSize * Math.cos(angel2 * (Math.PI / 180)));
             int yy2 = y2 + (int) (this.arrowTipSize * Math.sin(angel2 * (Math.PI / 180)));
 
-            this.g2d.fillPolygon(new int[] {x2, xx1, xx2}, new int[] {y2, yy1, yy2}, 3 );
+            g2d.fillPolygon(new int[] {x2, xx1, xx2}, new int[] {y2, yy1, yy2}, 3 );
         }
     }
     public static class MenuDemo implements ActionListener, ItemListener {
@@ -246,7 +244,7 @@ public class gui {
 
                         if (returnVal == JFileChooser.APPROVE_OPTION) {
                             try {
-                                this.CPC.GetGraph().save(file.getPath().toString());
+                                this.CPC.GetGraph().save(file.getPath());
                             } catch (IOException exception) {
 
                                 exception.printStackTrace();
@@ -371,6 +369,9 @@ public class gui {
                         DrawGraph(DWGA);
                         JOptionPane.showMessageDialog(frame, "Node " + ID + " was successfully removed from the graph");
                     }
+                    else {
+                        JOptionPane.showMessageDialog(frame, "Node " + ID + " does not exist in the graph");
+                    }
                     break;
                 case "Remove Edge":
                     ID1 = -1;
@@ -416,7 +417,6 @@ public class gui {
                         }
                     }
                     LinkedList<NodeData> list = (LinkedList<NodeData>) DWGA.shortestPath(ID1, ID2);
-                    this.CPC.highLightPath(list);
                     break;
                 case "TSP":
                     LinkedList<NodeData> tsplist = null;
@@ -444,12 +444,15 @@ public class gui {
                             continue;
                         }
                     }
+                    List<NodeData> a = DWGA.tsp(tsplist);
                     DrawGraph(DWGA);
-                    this.CPC.highLightPath(tsplist);
+                    this.CPC.SetNodes((LinkedList<NodeData>) tsplist);
+                    this.CPC.repaint();
+
+
                     break;
                 case "Center":
                     NodeData node = DWGA.center();
-                    this.CPC.highLightNode(node);
                     break;
             }
         }
@@ -460,17 +463,12 @@ public class gui {
         }
         private void DrawGraph(DirectedWeightedGraphAlgorithms DWGA) {
             int[] screenSize = null;
-            Graphics2D g2d = null;
             if (this.CPC != null) {
-                this.frame.remove(this.CPC);
                 screenSize = this.CPC.GetScreenSize();
-                g2d = this.CPC.GetGraphics2D();
-                this.CPC = null;
+                this.frame.remove(this.CPC);
             }
-            this.CPC = new CustomPaintComponent();
             this.CPC.SetGraph(DWGA);
             this.CPC.SetScreenSize(screenSize);
-            this.CPC.SetGraphics2D(g2d);
             this.frame.add(this.CPC);
             this.frame.setVisible(true);
         }
