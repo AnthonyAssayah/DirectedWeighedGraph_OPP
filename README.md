@@ -19,7 +19,7 @@ the graph and all its parameters and options.
 
 - Tutorial on the [*BFS Algorithm*](https://www.programiz.com/dsa/graph-bfs).This algorithm is used to calculate the distances of all the nodes from a source node in an  graph directed or not directed.
 
-## Interfaces 🎯
+## Interfaces & Classes 🎯
 
 There are 5 classes defined in this project, the interfaces are in the ```api``` package and their implementations can be found in ```classes``` package. Their properties and 
 methods are detailed below.
@@ -86,7 +86,7 @@ Each ```NodeDataObj``` contains five attributes:
 
 <br />
 
-  ### <ins>***3 - GeoLocation***<ins> 📍
+  ### <ins>***3 - GeoLocation***<ins>
   
  GeoLocation implements GeoLocationObj, this class contains all the elements needed for a point 3D visualization The interface geo_location is designed to have all the qualities  that are needed per a node in a directed weighted graph.
   
@@ -194,16 +194,144 @@ Each ```NodeDataObj``` contains five attributes:
   
     <br />
   
-  **3. ```ppNode(JSONObject node)```:**
+  3. ```ppNode(JSONObject node)```:
   
-     As the same, this private method is used in order to load the nodes graph from a **Json** file.
+     As the same, this private method is used in order to load the nodes graph from a **Json** file, importing the same librairies.
   
   <br />
   
-  **4. ```Dijkstra(NodeData src, NodeData dst)```:**
+   4. ```Dijkstra(NodeData src, NodeData dst)```:
   
+  <br />
+ 
+ ### <ins>***6 - Ex2***<ins>
+ 
+This is the main class, the "control pole". It will call on other interfaces and classes including the GUI in order to verify our implementation. `Ex2` includes three major functions detailled below:
+
+- `DirectedWeightedGraph getGrapg (String json_file):` This method will create a new `DirectedWeightedGraphAlgorithmsObj`, load it form a Json file and return the graph which corresponds to it.
+
+- `DirectedWeightedGraphAlgorithms getGrapgAlgo (String json_file)`: This function looks like the previous one, indeed it will also create a new `DirectedWeightedGraphAlgorithmsObj`, load it form a Json file and at the end return it.
+
+- `void runGUI (String json_file)`: This static function will run our GUI using the Json file.
+ 
+  <br />
+ 
+ ### <ins>***7 - Tests***<ins>
+ 
+ You can find our *Junit* tests in `testing` package in the `src` Directory.
+ 
+   <br />
+  
+  ## GUI 🎨
+ 
+ The `gui` class is the real visual representation, it kind of allows us to translate all our classes and algorithms on a window. The work on the Gui is divided into three main parts in which each has an essential role in the design of the graph.
+ 
+ ***1.*** class `gui`:
+  This class defines the size of the sreen window `int[] screenSize.The frame who is implemented as an instance of the JFrame class, is a window that has decorations such as a border, a title, the Toolbar and supports button components that close or iconify the window. 
+ 
+     - public gui(DirectedWeightedGraphAlgorithms alg)
+     - public static JMenuBar makeMenueBar(JFrame frame, CustomPaintComponent CPC)
+ 
+   <br />
+ 
+ ***2.*** class `CustomPaintComponent`: 
+   The role of this class is to draw the graph on the screen, it is first necessary to subclass a `Component` and override its `paint()` method. The paint() method is automatically called 
+   by the windowing system whenever component's area needs to be repainted.
+ 
+     - public void paint(Graphics g) 
+     - public void SetGraph(DirectedWeightedGraphAlgorithms DWG)
+     - public DirectedWeightedGraphAlgorithms GetGraph() 
+     - public void SetScreenSize(int[] ScreenSize)
+     - public int[] GetScreenSize() 
+     - public void SetGraphics2D(Graphics2D g2d)
+     - public Graphics2D GetGraphics2D() 
+     - public void drawNodes(Graphics2D g2d)
+     - public void drawEdges(Graphics2D g2d)
+     - public double algoX(double x)
+     - public double algoY(double y) 
+     - public void updatePrivateValues(DirectedWeightedGraph DWG)
+     - public void drawArrow(Graphics2D g2d, int x1, int y1, int x2, int y2)
+     - public void highLightNode(NodeData node)
+     - public void highLightPath(LinkedList<NodeData> nodes)
+ 
+   <br />
+ 
+  ***3.*** class `MenuDemo`:
+ The class use `ActionListener` to notify when we click on the button or menu item, it is notified against `ActionEvent`. The ActionListener interface is found in `java.awt.event` package. The method `actionPerformed()` is invoked automatically when we click on the registered component. `ItemListener` notify us when we click on the checkbox against `ItemEvent`. The only method implemented is `itemStateChanged()`, when we click or unclick on the registered checkbox component.
+ 
+     - public MenuDemo(JMenuItem[] JMI_Arr, JFrame frame, CustomPaintComponent CPC)
+     - public void actionPerformed(ActionEvent e)
+     - public void itemStateChanged(ItemEvent e) 
+     - private void DrawGraph(DirectedWeightedGraphAlgorithms DWGA) 
+ 
+ Apart from the possibility of retransmitting the graph on a window, the gui allows us to the user can to choose manually several functions and algorithms and compile them just by clicking on the function in the toolbar
+ 
+ ***1.*** `Save` and `Load` the graph in `File` menu, by choosing the Json file in your Desktop. 
+ 
+  <br />
+ 
+ <p align="center">
+   <img width="640" height="470" src="https://user-images.githubusercontent.com/92322613/145551275-bc8a3d77-4f39-4d7e-84fd-042f2ecd6396.png">
+</p>
+ 
+ 
+ ***2.*** You can also `Add Node`, `Remove Node`, `Add Edge` and `Remove Node` into/from the graph in `Edit` menu, by writting the coordinates and the ID of a node or the source, destination and weight for an edge. *(In this example, I just added a new node with ID: 32 and and connect it with a new edge to node 1)*.
+ 
+   <br />
+ 
+ <p align="center">
+   <img width="1700" height="360" src="https://user-images.githubusercontent.com/92322613/145558728-0cd16d41-2523-4d58-974c-387df0476c5c.PNG">
+</p>
+ 
+  
+ ***3.*** You can apply the algorithms `ShortestPath`, `isConnected`, `center` and `TSP` on the graph in `Algorithms` menu.
+ 
+ - `isConnected` will return a window with a message if the graph is connected or not.
+    <br />
+ 
+ <p align="center">
+   <img width="550" height="440" src="https://user-images.githubusercontent.com/92322613/145560100-6d229f57-5a33-429f-99ae-d77217d8b567.PNG">
+</p>
+  
+  - `ShortestPath` will return graph with a coloring path from the node *source* to the node *dest* and `center` will color the center node.
+    <br />
+
+  <p align="center">
+   <img width="550" height="440" src="https://user-images.githubusercontent.com/92322613/145561713-a1466d8b-703d-47ff-abe0-d7909680ec4a.PNG">
+</p>
+   <br />
+ 
+ 
   <br />
   
   ## UML Diagram 📊
+ <br />
+ 
+ UML Diagram of the interfaces and their implementations:
+   <p align="center">
+   <img width="870" height="640" src="https://user-images.githubusercontent.com/92322613/145563911-2fe01524-6288-40c9-9171-728e2877c1ec.png">
+</p>
+   <br />
   
+ UML Diagram of the Gui:
+   <p align="center">
+   <img width="940" height="520" src="https://user-images.githubusercontent.com/92322613/145564582-8b957101-a88a-423b-a708-40ac69d5930b.PNG">
+</p>
+   <br />
+  
+ ## Analysis of Performance 📈
+ 
+ 
+  <br />
+
+| **Number of nodes in the graph**      |    **Time in second**  | 
+|-----------------|-----------------------|
+| *1000* | -------|
+| *10.000* | -------- |
+| *100.000* | -------- |
+| *1.000.000* | -------- |
+
+ 
+ 
+  ## How to run 💻
   
