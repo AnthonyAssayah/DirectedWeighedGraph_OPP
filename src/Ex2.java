@@ -39,7 +39,7 @@ public class Ex2 {
     public static void main(String[] args) {
 
         //runGUI(args[0]);
-        runGUI("C:/EX2_OOP/data/G1.json");
+        runGUI("C:\\Users\\edanp\\IdeaProjects\\EX2_OOP\\data\\G1.json");
 
 
     }
