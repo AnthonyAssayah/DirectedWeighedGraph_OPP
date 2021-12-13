@@ -4,8 +4,6 @@ package classes;
 import api.GeoLocation;
 import api.NodeData;
 
-import java.util.HashMap;
-import java.util.Map;
 
 public class NodeDataObj implements NodeData {
 
@@ -133,6 +131,12 @@ public class NodeDataObj implements NodeData {
     @Override
     public void setTag(int t) {
         this.tag = t;
+    }
+
+
+    public int compareTo(NodeData o) {
+        NodeData n = this;
+        return Double.compare(n.getWeight(), o.getWeight());
     }
 
     @Override

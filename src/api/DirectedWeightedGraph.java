@@ -1,8 +1,6 @@
 package api;
-import classes.EdgeDataObj;
-
-import java.util.Collection;
 import java.util.Iterator;
+
 /**
  * This interface represents a Directional Weighted Graph,
  * As in: http://math.oxford.emory.edu/site/cs171/directedAndEdgeWeightedGraphs/
@@ -93,6 +91,4 @@ public interface DirectedWeightedGraph {
  * @return
  */
 	public int getMC();
-
-
 }

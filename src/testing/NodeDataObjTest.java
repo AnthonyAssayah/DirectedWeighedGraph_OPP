@@ -2,15 +2,13 @@ package testing;
 import api.GeoLocation;
 import classes.GeoLocationObj;
 import classes.NodeDataObj;
-import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.*;
 
-class NodeDataObjTest {       /// test on constructors ???
+class NodeDataObjTest {
 
     private NodeDataObj node1;
     private NodeDataObj node2;
-    GeoLocation g1;
-    GeoLocation g2;
+
 
     public void new_Node1() {
         GeoLocation g1 = new GeoLocationObj(7, -1, 3.5);
@@ -74,11 +72,11 @@ class NodeDataObjTest {       /// test on constructors ???
         new_Node1();
         double weight_1 = 62.32;
         node1.setWeight(weight_1);
-        assertNotEquals(node1.getWeight(),weight_1 );       // NEED TO CHECK
+        assertEquals(node1.getWeight(),weight_1 );
         new_Node2();
         double weight_2 = 5.999;
         node2.setWeight(weight_2);
-        assertNotEquals(node2.getWeight(),weight_2 );      // NEED TO CHECK
+        assertEquals(node2.getWeight(),weight_2 );
     }
 
     @org.junit.jupiter.api.Test

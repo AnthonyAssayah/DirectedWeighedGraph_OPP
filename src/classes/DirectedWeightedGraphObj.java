@@ -53,6 +53,7 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      * @param dest
      * @return
      */
+    // First check if the node src and dest exist then return the edge between them - if not exist return null
     @Override
     public EdgeData getEdge(int src, int dest) {
         if (this.nodes.containsKey(src) && this.nodes.containsKey(dest)) {
@@ -117,9 +118,10 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      * @return Iterator<node_data>
      */
     @Override
-    public Iterator<NodeData> nodeIter() {
+    public Iterator<NodeData> nodeIter()  {
         return new Iterator<NodeData>() {
             Iterator<NodeData> itr = nodes.values().iterator();
+            NodeData currNode;
             int MC = mc;
             @Override
             public boolean hasNext() {
@@ -134,7 +136,26 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
                 if (MC != mc) {
                     throw new RuntimeException();
                 }
-                return itr.next();
+                currNode =itr.next();
+                return currNode;
+            }
+
+            @Override
+            public void remove() {
+                NodeData tempNode = itr.next();
+                NodeData nextNode;
+                removeNode(currNode.getKey());
+                itr = nodes.values().iterator();
+                nextNode = tempNode;
+                while (nextNode!=tempNode) {
+                    nextNode=itr.next();
+                }
+                currNode = tempNode;
+            }
+
+            @Override
+            public void forEachRemaining(Consumer<? super NodeData> action) {
+                Iterator.super.forEachRemaining(action);
             }
         };
     }
@@ -147,13 +168,24 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public Iterator<EdgeData> edgeIter() {
+
+        int MC = mc;
         return new Iterator<EdgeData>() {
             Iterator<HashMap<Integer, EdgeDataObj>> iter = edges.values().iterator();
             Iterator<EdgeDataObj> temp = null;
-            int MC = mc;
+            EdgeData currEdge;
+
             @Override
             public void remove() {
-                Iterator.super.remove();
+                EdgeData tempEdge = (EdgeData) iter.next();
+                EdgeData nextEdge;
+                removeEdge(currEdge.getSrc(), currEdge.getDest());
+                iter = edges.values().iterator();
+                nextEdge = tempEdge;
+                while (nextEdge != tempEdge) {
+                    nextEdge = (EdgeData) iter.next();
+                }
+                currEdge = tempEdge;
             }
 
             @Override
@@ -193,6 +225,7 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
             }
         };
     }
+
 
     /**
      * This method returns an Iterator for edges getting out of the given node (all the edges starting (source) at the given node).
@@ -235,12 +268,13 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public NodeData removeNode(int key) {
+        // if the noode with this key doesn't exist return null
         if (this.nodes.get(key) == null) {
             return null;
         }
 
         this.edges.remove(key);
-
+        // Remove all the edges connected to this node too
         for (HashMap<Integer, EdgeDataObj> hash : this.edges.values()) {
             if (hash.get(key) != null) {
                 this.removeEdge(hash.get(key).getSrc(), hash.get(key).getDest());
@@ -248,6 +282,7 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
                 mc++;
             }
         }
+        // Remove the node
         NodeData temp = this.nodes.get(key);
         this.nodes.remove(key);
         mc++;
@@ -265,6 +300,7 @@ public class DirectedWeightedGraphObj implements DirectedWeightedGraph {
      */
     @Override
     public EdgeData removeEdge(int src, int dest) {
+        // Check if the src and if there is an edge with the dest, remove the edge
         if (this.edges.get(src) != null && this.edges.get(src).containsKey(dest)) {
             EdgeDataObj edge = this.edges.get(src).get(dest);
             this.edges.get(src).remove(dest);

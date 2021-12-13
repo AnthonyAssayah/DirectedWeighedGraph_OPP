@@ -10,7 +10,6 @@ import classes.GeoLocationObj;
 import classes.NodeDataObj;
 import org.junit.jupiter.api.Test;
 
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -20,8 +19,6 @@ import static org.junit.jupiter.api.Assertions.*;
 class DirectedWeightedGraphObjTest {
 
     private DirectedWeightedGraph graph = new DirectedWeightedGraphObj();
-    private HashMap<Integer, NodeData> nodes;
-    private HashMap<Integer, HashMap<Integer, EdgeDataObj>> edges;
 
     private  NodeData n0;
     private  NodeData n1;
@@ -37,17 +34,12 @@ class DirectedWeightedGraphObjTest {
 
     public void new_DWG1()  {
         graph = new DirectedWeightedGraphObj();
-        GeoLocation g0 = new GeoLocationObj(3, 10, 3);
-        GeoLocation g1 = new GeoLocationObj(5, 20.5, 9);
-        GeoLocation g2 = new GeoLocationObj(-12, 25, 6);
-        GeoLocation g3 = new GeoLocationObj(5, -1, 1);
-        GeoLocation g4 = new GeoLocationObj(0, 0, 0);
 
-        n0 = new NodeDataObj(4,g0);
-        n1 = new NodeDataObj(5,g1);
-        n2 = new NodeDataObj(3,g2);
-        n3 = new NodeDataObj(7,g3);
-        n4 = new NodeDataObj(9,g4);
+        n0 = new NodeDataObj(4,new GeoLocationObj(3, 10, 3));
+        n1 = new NodeDataObj(5,new GeoLocationObj(5, 20.5, 9));
+        n2 = new NodeDataObj(3,new GeoLocationObj(-12, 25, 6));
+        n3 = new NodeDataObj(7,new GeoLocationObj(5, -1, 1));
+        n4 = new NodeDataObj(9,new GeoLocationObj(0, 0, 0));
 
         e0 = new EdgeDataObj(n0.getKey(), n1.getKey(),3);
         e1 = new EdgeDataObj(n1.getKey(), n2.getKey(),5);
@@ -55,9 +47,6 @@ class DirectedWeightedGraphObjTest {
         e3 = new EdgeDataObj(n2.getKey(), n3.getKey(),7);
         e4 = new EdgeDataObj(n3.getKey(), n4.getKey(),1);
         e5 = new EdgeDataObj(n0.getKey(), n4.getKey(),2);
-
-        nodes = new HashMap<Integer, NodeData>();
-        edges = new HashMap<Integer, HashMap<Integer, EdgeDataObj>>();
 
         graph.addNode(n0);
         graph.addNode(n1);
@@ -93,7 +82,7 @@ class DirectedWeightedGraphObjTest {
     }
 
     @Test
-    void getEdge() throws Exception {
+    void getEdge() {
         new_DWG1();
         graph.connect(n0.getKey(), n1.getKey(), e0.getWeight());
         EdgeData edge = new EdgeDataObj((EdgeDataObj) graph.getEdge(n0.getKey(), n1.getKey()));
@@ -124,7 +113,7 @@ class DirectedWeightedGraphObjTest {
     }
 
     @Test
-    void connect() throws Exception {
+    void connect() {
         new_DWG1();
         graph.connect(n0.getKey(), n1.getKey(), e0.getWeight()); // already exist in graph1
         graph.connect(n1.getKey(), n2.getKey(), e1.getWeight()); // already exist in graph1
@@ -160,6 +149,8 @@ class DirectedWeightedGraphObjTest {
             System.out.println(v.getKey());
             count++;
         }
+        System.out.println(count);
+        System.out.println(list.size());
         assertEquals(count, list.size());
     }
 
@@ -200,13 +191,10 @@ class DirectedWeightedGraphObjTest {
     void removeNode() {
         new_DWG1();
         int t = this.graph.nodeSize();
-        System.out.println(t);
-       // System.out.println(this.graph1.edgeSize());
         this.graph.removeNode(n1.getKey());
         this.graph.removeNode(n2.getKey());
         int s = this.graph.nodeSize();
-        System.out.println(s);
-        //System.out.println(this.graph1.edgeSize());
+
         assertEquals(t-2,s);
 
 
@@ -239,7 +227,7 @@ class DirectedWeightedGraphObjTest {
     }
 
     @Test
-    void edgeSize() throws Exception {
+    void edgeSize()  {
         new_DWG1();
         assertEquals(6,graph.edgeSize());
 
@@ -258,9 +246,6 @@ class DirectedWeightedGraphObjTest {
     void getMC() {
         new_DWG1();
         assertEquals(graph.getMC(),11);
-       // this.graph1.removeNode(n1.getKey());
-//        System.out.println(graph1.nodeSize());
-//        System.out.println(graph1.edgeSize());
         graph.removeEdge(e0.getSrc(),e0.getDest());
         graph.removeEdge(e1.getSrc(),e1.getDest());
         graph.removeEdge(e2.getSrc(),e2.getDest());

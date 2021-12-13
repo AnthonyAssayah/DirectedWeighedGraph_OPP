@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.SortedMap;
 
 public class gui {
 
@@ -91,8 +92,8 @@ public class gui {
         private final int nodeSize = 7;
         private final int margin = 50;
         private final int indexOffset = 8;
-        private final int arrowTipSize = 12;
-        private LinkedList<NodeData> nodespath = null;
+        private final int arrowTipSize = 14;
+        private LinkedList<EdgeData> highlightpath = null;
         private LinkedList<NodeData> highlightnodes = null;
 
         public void paint(Graphics g) {
@@ -126,12 +127,12 @@ public class gui {
             return this.ScreenSize;
         }
 
-        public void SetNodesPath(LinkedList<NodeData> nodes) {
-            this.nodespath = nodes;
+        public void SetEdgePath(LinkedList<EdgeData> edges) {
+            this.highlightpath = edges;
         }
 
-        public LinkedList<NodeData> GetNodesPath() {
-            return this.nodespath;
+        public LinkedList<EdgeData> GetEdgePath() {
+            return this.highlightpath;
         }
 
         public void SetNodesHighlight(LinkedList<NodeData> nodes) {
@@ -153,35 +154,32 @@ public class gui {
                 g2d.drawString(node.getKey() + "", (int) algoX(loc.x()) - (this.nodeSize / 2) + this.indexOffset, (int) algoY(loc.y()) - (this.nodeSize / 2) + this.indexOffset + 5);
             }
         }
-
-        public void highLightNodes(Graphics2D g2d) {
-            if (this.highlightnodes == null) return;
-            g2d.setColor(new Color(255, 78, 0, 255));
-            for (int i = 0; i < this.highlightnodes.size(); i++) {
-                if (this.DWGA.getGraph().getNode(this.highlightnodes.get(i).getKey()) != null) {
-                    GeoLocation loc = this.DWGA.getGraph().getNode(this.highlightnodes.get(i).getKey()).getLocation();
-                    g2d.drawOval((int) algoX(loc.x()) - ((this.nodeSize + 2) / 2), (int) algoY(loc.y()) - ((this.nodeSize + 2) / 2), this.nodeSize + 2, this.nodeSize + 2);
-                }
-            }
-        }
-
-        public void highLightPath(Graphics2D g2d) {
-            if (this.nodespath == null) return;
-            g2d.setStroke(new BasicStroke(3));
-            g2d.setColor(new Color(152, 0, 99));
-            for (int i = 0; i < this.nodespath.size() - 1; i++) {
-                EdgeData edge = this.DWGA.getGraph().getEdge(this.nodespath.get(i).getKey(), this.nodespath.get(i + 1).getKey());
-                GeoLocation src = this.DWGA.getGraph().getNode(edge.getSrc()).getLocation();
-                GeoLocation dest = this.DWGA.getGraph().getNode(edge.getDest()).getLocation();
-                drawArrow(g2d, (int) algoX(src.x()), (int) algoY(src.y()), (int) algoX(dest.x()), (int) algoY(dest.y()));
-            }
-        }
-
         public void drawEdges(Graphics2D g2d) {
             g2d.setColor(new Color(3, 60, 203));
             Iterator<EdgeData> it = this.DWGA.getGraph().edgeIter();
             while (it.hasNext()) {
                 EdgeData edge = it.next();
+                GeoLocation src = this.DWGA.getGraph().getNode(edge.getSrc()).getLocation();
+                GeoLocation dest = this.DWGA.getGraph().getNode(edge.getDest()).getLocation();
+                drawArrow(g2d, (int) algoX(src.x()), (int) algoY(src.y()), (int) algoX(dest.x()), (int) algoY(dest.y()));
+            }
+        }
+        public void highLightNodes(Graphics2D g2d) {
+            if (this.highlightnodes == null) return;
+            g2d.setColor(new Color(255, 0, 234, 255));
+            for (int i = 0; i < this.highlightnodes.size(); i++) {
+                if (this.DWGA.getGraph().getNode(this.highlightnodes.get(i).getKey()) != null) {
+                    GeoLocation loc = this.DWGA.getGraph().getNode(this.highlightnodes.get(i).getKey()).getLocation();
+                    g2d.drawOval((int) algoX(loc.x()) - ((this.nodeSize + 6) / 2), (int) algoY(loc.y()) - ((this.nodeSize + 6) / 2), this.nodeSize + 6, this.nodeSize + 6);
+                }
+            }
+        }
+
+        public void highLightPath(Graphics2D g2d) {
+            if (this.highlightpath == null) return;
+            g2d.setColor(new Color(65, 245, 155));
+            for (int i = 0; i < this.highlightpath.size(); i++) {
+                EdgeData edge = this.highlightpath.get(i);
                 GeoLocation src = this.DWGA.getGraph().getNode(edge.getSrc()).getLocation();
                 GeoLocation dest = this.DWGA.getGraph().getNode(edge.getDest()).getLocation();
                 drawArrow(g2d, (int) algoX(src.x()), (int) algoY(src.y()), (int) algoX(dest.x()), (int) algoY(dest.y()));
@@ -261,8 +259,6 @@ public class gui {
                         System.out.println("no graph to be saved");
                     } else {
                         final JFileChooser fc = new JFileChooser();
-                        File file1 = new File("C:/Users/edanp/IdeaProjects/EX2_OOP/data");
-                        fc.setCurrentDirectory(file1);
                         int returnVal = fc.showOpenDialog(fc);
                         File file = fc.getSelectedFile();
 
@@ -286,6 +282,8 @@ public class gui {
                     if (returnVal == JFileChooser.APPROVE_OPTION) {
                         DirectedWeightedGraphAlgorithms _DWGA = new DirectedWeightedGraphAlgorithmsObj();
                         _DWGA.load(file.getPath());
+                        this.CPC.SetEdgePath(null);
+                        this.CPC.SetNodesHighlight(null);
                         DrawGraph(_DWGA);
                     } else {
                         System.out.println("Load Command canceled by user");
@@ -438,14 +436,25 @@ public class gui {
                             break;
                         }
                     }
-                    LinkedList<NodeData> list = (LinkedList<NodeData>) DWGA.shortestPath(ID1, ID2);
-                    this.CPC.SetNodesHighlight(list);
+                    List<NodeData> list = DWGA.shortestPath(ID1, ID2);
+                    List<EdgeData> edgesShortestPath = new LinkedList<>();
+                    String printSP = "The Path is: ";
+                    for (int i = 0 ; i < list.size() - 1 ; i++) {
+                        if (i % 15 == 0) {
+                            printSP += "\n";
+                        }
+                        edgesShortestPath.add(DWGA.getGraph().getEdge(list.get(i).getKey(), list.get(i + 1).getKey()));
+                        printSP += list.get(i).getKey() + " -> ";
+                    }
+                    printSP += list.get(list.size() - 1).getKey();
+                    this.CPC.SetEdgePath((LinkedList<EdgeData>) edgesShortestPath);
                     DrawGraph(DWGA);
+                    JOptionPane.showMessageDialog(frame, printSP);
                     break;
                 case "TSP":
-                    LinkedList<NodeData> tsplist = null;
+                    LinkedList<NodeData> tsplist;
                     String IDs = JOptionPane.showInputDialog("Enter a set of Node ID as seen in the following example:\n1,2,14,12,13");
-                    if (IDs.isEmpty()) {
+                    if (IDs == null || IDs.isEmpty()) {
                         break;
                     }
                     String[] strIDs = IDs.split(",");
@@ -466,9 +475,24 @@ public class gui {
                             continue;
                         }
                     }
+                    if (tsplist.size() == 0) {
+                        JOptionPane.showMessageDialog(frame, "tsp returned an empty path");
+                        break;
+                    }
                     List<NodeData> a = DWGA.tsp(tsplist);
-                    this.CPC.SetNodesPath((LinkedList<NodeData>) a);
+                    List<EdgeData> edgesTCP = new LinkedList<>();
+                    String printTSP = "The Path is: ";
+                    for (int i = 0 ; i < a.size() - 1 ; i++) {
+                        if (i % 15 == 0) {
+                            printTSP += "\n";
+                        }
+                        edgesTCP.add(DWGA.getGraph().getEdge(a.get(i).getKey(), a.get(i + 1).getKey()));
+                        printTSP += a.get(i).getKey() + " -> ";
+                    }
+                    printTSP += a.get(a.size() - 1).getKey();
+                    this.CPC.SetEdgePath((LinkedList<EdgeData>) edgesTCP);
                     DrawGraph(DWGA);
+                    JOptionPane.showMessageDialog(frame, printTSP);
                     break;
                 case "Center":
                     NodeData node = DWGA.center();
@@ -476,6 +500,7 @@ public class gui {
                     nodes.add(node);
                     this.CPC.SetNodesHighlight(nodes);
                     DrawGraph(DWGA);
+                    JOptionPane.showMessageDialog(frame, "the center node is: " + node.getKey());
                     break;
             }
         }
