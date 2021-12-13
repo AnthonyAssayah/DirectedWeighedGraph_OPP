@@ -37,10 +37,11 @@ public class Ex2 {
         gui GUI = new gui(alg);
     }
     public static void main(String[] args) {
-
-        //runGUI(args[0]);
-        runGUI("C:\\Users\\edanp\\IdeaProjects\\EX2_OOP\\data\\G1.json");
-
-
+        if (args.length == 0) {
+            runGUI("..\\data\\G1.json");
+        }
+        else {
+            runGUI(args[0]);
+        }
     }
 }

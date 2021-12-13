@@ -259,8 +259,6 @@ public class gui {
                         System.out.println("no graph to be saved");
                     } else {
                         final JFileChooser fc = new JFileChooser();
-                        File file1 = new File("C:/Users/edanp/IdeaProjects/EX2_OOP/data");
-                        fc.setCurrentDirectory(file1);
                         int returnVal = fc.showOpenDialog(fc);
                         File file = fc.getSelectedFile();
 
