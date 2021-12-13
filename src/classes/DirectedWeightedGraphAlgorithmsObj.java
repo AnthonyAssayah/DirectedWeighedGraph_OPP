@@ -86,52 +86,33 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
      */
     @Override
     public boolean isConnected() {
-        //  If there isn't vertices or just only one return true
+
         if (this.DWG.nodeSize() == 0 || this.DWG.nodeSize() == 1) {
             return true;
         }
 
-        Iterator<NodeData> it = this.DWG.nodeIter();
+        DirectedWeightedGraph flippedEdges = new DirectedWeightedGraphObj();
 
-        while (it.hasNext()) {
+        Iterator<NodeData> NodeIter = this.DWG.nodeIter();
 
-            boolean check = this.BFS_Algo(it.next());
-            // reset tag
-            Iterator<NodeData> it2 = this.DWG.nodeIter();
-            while (it2.hasNext()) {
-                NodeData v = it2.next();
-                v.setTag(0);
-            }
+        while (NodeIter.hasNext()) {
 
-            if (check == false) {
-                return false;
-            }
+            flippedEdges.addNode(NodeIter.next());
         }
-        return true;
-    }
 
-    public void resetTag() {
-        Iterator<NodeData> it2 = this.DWG.nodeIter();
-        while (it2.hasNext()) {
-            NodeData v = it2.next();
-            v.setTag(0);
-        }
-    }
+        Iterator<EdgeData> EdgeIter = this.DWG.edgeIter();
 
-    public void resetInfo() {
-        Iterator<NodeData> it2 = this.DWG.nodeIter();
-        while (it2.hasNext()) {
-            NodeData v = it2.next();
-            v.setInfo("White");
+        while (EdgeIter.hasNext()) {
+            EdgeData e = EdgeIter.next();
+            flippedEdges.connect(e.getDest(), e.getSrc(), e.getWeight());
         }
-    }
 
-    public void resetWeight() {
-        Iterator<NodeData> it2 = this.DWG.nodeIter();
-        while (it2.hasNext()) {
-            NodeData v = it2.next();
-            v.setWeight(Double.MAX_VALUE);
-        }
+        boolean ThisGraphBFS = this.BFS_Algo(this.DWG.getNode(0));
+        DirectedWeightedGraph temp = this.DWG;
+        this.DWG = flippedEdges;
+        boolean ThisGraphTransposeBFS = this.BFS_Algo(this.DWG.getNode(0));
+        this.DWG = temp;
+        return ThisGraphBFS && ThisGraphTransposeBFS;
     }
 
     /**
@@ -144,7 +125,6 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
      */
     @Override
     public double shortestPathDist(int src, int dest) {
-
 
         Iterator<NodeData> it2 = this.DWG.nodeIter();
         while (it2.hasNext()) {
@@ -184,14 +164,6 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
     @Override
     public List<NodeData> shortestPath(int src, int dest) {
 
-//        Iterator<NodeData> it2 = this.DWG.nodeIter();
-//        while (it2.hasNext()) {
-//            NodeData v = it2.next();
-//            v.setTag(0);
-//            previous.put(v.getKey(), null);
-//            v.setWeight(Double.MAX_VALUE);
-//            distance.put(v.getKey(), Double.MAX_VALUE);
-//        }
         init(DWG);
         NodeData source = DWG.getNode(src);
         NodeData destination = DWG.getNode(dest);
@@ -245,14 +217,14 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
         }
 
         Iterator<NodeData> it = this.DWG.nodeIter();
-        Iterator<NodeData> it2;
 
-        double max = 0;
         double min = Double.MAX_VALUE;
         NodeData ret = null;
+
         while (it.hasNext()) {
-            max = 0;
-            it2 = this.DWG.nodeIter();
+
+            double max = 0;
+            Iterator<NodeData> it2 = this.DWG.nodeIter();
             NodeData node1 = it.next();
 
             while (it2.hasNext()) {
@@ -287,7 +259,7 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
 
         List<NodeData> tsp_path = new LinkedList<>();
         List<Integer> curr_list = new LinkedList<>();
-        List<NodeData> short_list = new LinkedList<>();
+
         for(int i = 0; i < cities.size(); i++) {
             curr_list.add(cities.get(i).getKey());
         }
@@ -311,7 +283,7 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
                     index = i;
                 }
             }
-            short_list = shortestPath(tmp.getKey(), node_id);
+            List<NodeData> short_list = shortestPath(tmp.getKey(), node_id);
             short_list.remove(0);
 
             while ( !short_list.isEmpty()) {
@@ -433,6 +405,13 @@ public class DirectedWeightedGraphAlgorithmsObj implements DirectedWeightedGraph
     }
 
     private boolean BFS_Algo(NodeData node) {
+
+        // reset tag
+        Iterator<NodeData> it2 = this.DWG.nodeIter();
+        while (it2.hasNext()) {
+            NodeData v = it2.next();
+            v.setTag(0);
+        }
 
         Queue<NodeData> Queue = new LinkedList<>();
         node.setTag(1);
