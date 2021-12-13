@@ -194,13 +194,9 @@ Each ```NodeDataObj``` contains five attributes:
   
     <br />
   
-  3. ```ppNode(JSONObject node)```:
+  **3. ```ppNode(JSONObject node)```:**
   
      As the same, this private method is used in order to load the nodes graph from a **Json** file, importing the same librairies.
-  
-  <br />
-  
-   4. ```Dijkstra(NodeData src, NodeData dst)```:
   
   <br />
  
@@ -324,14 +320,19 @@ This is the main class, the "control pole". It will call on other interfaces and
  
   <br />
 
-| **Number of nodes in the graph**      |    **Time in second**  | 
+| **Number of nodes in the graph**      |    **Loading time of the graph**  | 
 |-----------------|-----------------------|
-| *1000* | -------|
-| *10.000* | -------- |
-| *100.000* | -------- |
-| *1.000.000* | -------- |
+| *1000* | 262ms |
+| *10.000* | 776ms |
+| *100.000* | 3sec 545ms |
+| *1.000.000* | heap |
 
  
  
   ## How to run 💻
   
+ For running the program, you need to first go to the folder where the `jar` is stored and the command the command prompt.
+ In the CMD, run the following command `java -jar EX2_OOP.jar <enter the file path of the initial graph>`. 
+ *(For example, if you want to load G1.json graph you enter in the CMD: ` java -jar EX2_OOP.jar data/G1.json`)*.
+
+ 
